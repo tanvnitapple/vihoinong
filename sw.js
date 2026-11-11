@@ -1,6 +1,6 @@
 // Service worker của ví nóng: chỉ lưu sẵn chính ứng dụng để mở nhanh/ngoại tuyến.
 // Không bao giờ lưu hay can thiệp vào dữ liệu từ máy chủ Cardano.
-const CACHE = 'vi-nong-e1d93b92b78b';
+const CACHE = 'vi-nong-35f8a31bb712';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

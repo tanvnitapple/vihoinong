@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fU3qvk8NjmbJj6SFCgliG98kfnHSCK95FaJdNwGOFwQ='; style-src 'sha256-HhjhBkNSA7eAScz0DJRbGvnnlswrN0on1DFZjIOfAis='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WnPZaibstDv6t6B4Nx9GHi96Uz66r56LDHgDeYaJDdk='; style-src 'sha256-rGYYg/kGl3VboATgPvFamT8QazVVY/2ew2mVRz7uM1M='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F7">
@@ -124,6 +124,20 @@ canvas.qr{width:100%;max-width:340px;height:auto;border-radius:12px;background:#
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
 a{color:var(--accent);font-weight:600}
 ol.plain{margin:0;padding-left:20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+details.fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 14px}
+details.fold>summary{list-style:none;cursor:pointer;min-height:52px;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:16px}
+details.fold>summary::-webkit-details-marker,details.tx>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 6px 4px 0}
+details.fold[open]>summary::after{transform:rotate(-135deg);margin:4px 6px 0 0}
+details.fold>.hint,details.fold>.warn,details.fold>button{margin:0 0 12px}
+details.tx{border-top:1px solid var(--line)}
+details.tx>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;min-height:48px;align-items:center}
+.tx-kind{font-size:15px;font-weight:600}
+.tx-amt{font-size:15px;font-weight:700;text-align:right}
+details.tx.in .tx-amt{color:var(--ok)}
+.tx-time{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.tx-body{padding:4px 0 12px;display:flex;flex-direction:column}
+details>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
 </style>
 </head>
 <body class="hot">
@@ -2860,6 +2874,55 @@ async function fetchAccount(stakeAddress) {
   };
 }
 
+const NIGHT_UNIT = '0691b2fecca1ac4f53cb6dfb00b7013e561d1f34403b957cbb5af1fa4e49474854';
+
+/**
+ * Lịch sử giao dịch của địa chỉ (mới nhất trước). Mỗi mục đã tính sẵn số tiền ròng vào/ra của ví.
+ * @returns {Promise<{items: Array, more: boolean}>}
+ */
+async function fetchHistory(address, page = 1, count = 10) {
+  if (!/^addr1[0-9a-z]{50,110}$/.test(address)) throw new Error('Địa chỉ ví không hợp lệ');
+  const list = await call(`/addresses/${address}/transactions?order=desc&count=${count}&page=${page}`, true);
+  if (list === null) return { items: [], more: false };
+  if (!Array.isArray(list)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+  const sumOf = entries => {
+    let lovelace = 0n, night = 0n, other = false;
+    for (const e of entries) for (const a of Array.isArray(e.amount) ? e.amount : []) {
+      if (a.unit === 'lovelace') lovelace += big(a.quantity);
+      else if (a.unit === NIGHT_UNIT) night += big(a.quantity, 18446744073709551615n);
+      else other = true;
+    }
+    return { lovelace, night, other };
+  };
+  const addrText = v => (typeof v === 'string' && /^[0-9A-Za-z_]{20,130}$/.test(v) ? v : '(địa chỉ không đọc được)');
+  const one = async row => {
+    const txHash = String(row.tx_hash || '').toLowerCase();
+    if (!/^[0-9a-f]{64}$/.test(txHash)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+    const [u, t] = await Promise.all([call(`/txs/${txHash}/utxos`), call(`/txs/${txHash}`)]);
+    if (!u || !Array.isArray(u.inputs) || !Array.isArray(u.outputs) || !t) throw new Error('Dữ liệu máy chủ không hợp lệ');
+    const ins = u.inputs.filter(i => !i.collateral && !i.reference), outs = u.outputs.filter(o => !o.collateral);
+    const ownIn = ins.filter(i => i.address === address), ownOut = outs.filter(o => o.address === address);
+    const external = outs.filter(o => o.address !== address);
+    const a = sumOf(ownIn), b = sumOf(ownOut);
+    const fee = big(t.fees), deposit = /^-?\d{1,15}$/.test(String(t.deposit)) ? BigInt(t.deposit) : 0n;
+    let kind;
+    if (ownIn.length === 0) kind = 'receive';
+    else if (external.length > 0) kind = 'send';
+    else if (Number(t.delegation_count) > 0 || Number(t.stake_cert_count) > 0) kind = 'delegation';
+    else if (Number(t.withdrawal_count) > 0) kind = 'withdraw';
+    else kind = 'self';
+    const parties = kind === 'receive'
+      ? [...new Set(ins.map(i => addrText(i.address)))].slice(0, 3).map(address => ({ address }))
+      : external.slice(0, 5).map(o => { const v = sumOf([o]); return { address: addrText(o.address), lovelace: v.lovelace, night: v.night, other: v.other }; });
+    const time = Number(row.block_time);
+    return { txHash, time: Number.isFinite(time) ? time : 0, kind, fee, deposit,
+      netLovelace: b.lovelace - a.lovelace, netNight: b.night - a.night, other: a.other || b.other, parties };
+  };
+  const items = [];
+  for (let i = 0; i < list.length; i += 4) items.push(...await Promise.all(list.slice(i, i + 4).map(one)));
+  return { items, more: list.length === count };
+}
+
 async function fetchTipAndParams() {
   const tip = await call('/blocks/latest');
   const slot = tip ? Number(tip.slot) : NaN;
@@ -2920,7 +2983,7 @@ const KEY_STORE = 'adagap.hot.blockfrost';
 const TTL_SECONDS = 3 * 3600; // giao dịch có hiệu lực 3 giờ kể từ lúc tạo
 
 const root = document.getElementById('app');
-const state = { key: '', tab: 'wallet', sub: null, wallet: null, data: null, loading: false, error: null, flow: null, cleanup: null,
+const state = { key: '', history: null, historyOpen: false, openTx: new Set(), tab: 'wallet', sub: null, wallet: null, data: null, loading: false, error: null, flow: null, cleanup: null,
   pay: { asset: 'ADA', to: '', amount: '', all: false }, stake: { pool: 'keep', poolCustom: '', drep: 'keep', drepCustom: '' } };
 
 // ---------------------------------------------------------------------------
@@ -2933,7 +2996,7 @@ function loadWallet() {
 function saveWallet(xpubBytes) {
   const w = walletFromXpub(xpubBytes);
   localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, xpub: bytesToB64(xpubBytes) }));
-  state.wallet = w; state.data = null;
+  state.wallet = w; state.data = null; state.history = null; state.openTx = new Set();
   return w;
 }
 
@@ -2944,8 +3007,10 @@ async function refresh() {
   try {
     const [utxos, account] = await Promise.all([fetchUtxos(state.wallet.baseAddress), fetchAccount(state.wallet.stakeAddress)]);
     state.data = { utxos, account, at: Date.now() };
+    state.history = null;
   } catch (e) { state.error = e.message; }
   state.loading = false; render();
+  if (state.historyOpen && !state.history) loadHistory();
 }
 
 function totals() {
@@ -3078,10 +3143,65 @@ function viewWallet() {
       h('div.kv', h('span', 'Pool đang ủy quyền'), h('strong', acct.pool ? (knownPoolName(acct.pool) || `${acct.pool.slice(0, 14)}…`) : 'Chưa có')),
       h('div.kv', h('span', 'DRep'), h('strong', acct.drep ? (knownDrepName(acct.drep) || drepLabel(acct.drep)) : 'Chưa có')),
       h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`))) : null,
+    historyView(),
     busyButton(state.loading ? 'Đang tải…' : 'Cập nhật số dư', refresh, 'secondary'),
     state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null,
-    h('p.hint', 'Phiên bản 2.2 · 2026-11-11 02:45 UTC')
+    h('p.hint', 'Phiên bản 2.2 · 2026-11-11 06:38 UTC')
   ];
+}
+
+// ---------------------------------------------------------------------------
+// Lịch sử giao dịch (thu gọn; chỉ tải khi mở ra)
+// ---------------------------------------------------------------------------
+async function loadHistory(next = false) {
+  const hst = state.history || (state.history = { items: [], page: 0, more: true, loading: false, error: null });
+  if (hst.loading || (!next && hst.page > 0)) return;
+  hst.loading = true; hst.error = null; render();
+  try {
+    const r = await fetchHistory(state.wallet.baseAddress, hst.page + 1, 10);
+    hst.items.push(...r.items); hst.page += 1; hst.more = r.more;
+  } catch (e) { hst.error = e.message; }
+  hst.loading = false; render();
+}
+
+const KIND_LABEL = { receive: 'Nhận', send: 'Gửi đi', delegation: 'Ủy quyền staking', withdraw: 'Rút thưởng', self: 'Ủy quyền / nội bộ ví' };
+
+function historyAmount(it) {
+  const parts = [];
+  const signed = (v, dec, unit) => `${v > 0n ? '+' : '−'}${formatUnits(v < 0n ? -v : v, dec)} ${unit}`;
+  if (it.netNight !== 0n) parts.push(signed(it.netNight, NIGHT.decimals, 'NIGHT'));
+  if (it.kind === 'send') { const sent = -it.netLovelace - it.fee; if (sent > 0n) parts.push(signed(-sent, 6, 'ADA')); }
+  else if (it.kind === 'receive' || it.kind === 'withdraw') { if (it.netLovelace !== 0n) parts.push(signed(it.netLovelace, 6, 'ADA')); }
+  else parts.push(`Phí ${formatUnits(it.fee)} ADA`);
+  return parts.join(' · ') || '0 ADA';
+}
+
+function historyView() {
+  const hst = state.history;
+  const box = h('details.fold', { open: state.historyOpen || null }, h('summary', 'Lịch sử giao dịch'));
+  box.addEventListener('toggle', () => { state.historyOpen = box.open; if (box.open && !state.history) loadHistory(); });
+  if (!hst) return box;
+  for (const it of hst.items) {
+    const when = it.time ? new Date(it.time * 1000).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
+    const row = h('details.tx' + (it.netLovelace > 0n && it.kind !== 'send' ? '.in' : ''), { open: state.openTx.has(it.txHash) || null },
+      h('summary', h('span.tx-kind', KIND_LABEL[it.kind]), h('span.tx-amt', historyAmount(it)), h('span.tx-time', when)),
+      h('div.tx-body',
+        it.parties.map(pt => h('div.kv.col', h('span', it.kind === 'receive' ? 'Từ địa chỉ' : 'Đến địa chỉ'), h('strong.mono', pt.address),
+          it.kind === 'receive' ? null : h('span', [pt.lovelace > 0n ? `${formatUnits(pt.lovelace)} ADA` : null, pt.night > 0n ? `${formatUnits(pt.night, NIGHT.decimals)} NIGHT` : null, pt.other ? 'token khác' : null].filter(Boolean).join(' + ')))),
+        it.kind !== 'receive' ? h('div.kv', h('span', 'Phí mạng'), h('strong', `${formatUnits(it.fee)} ADA`)) : null,
+        it.deposit !== 0n ? h('div.kv', h('span', it.deposit > 0n ? 'Tiền cọc staking' : 'Hoàn tiền cọc'), h('strong', `${formatUnits(it.deposit < 0n ? -it.deposit : it.deposit)} ADA`)) : null,
+        it.other ? h('div.kv', h('span', 'Ghi chú'), h('strong', 'Có token khác trong giao dịch')) : null,
+        h('div.kv.col', h('span', 'Mã giao dịch'), h('strong.mono', it.txHash)),
+        h('a', { href: `https://cardanoscan.io/transaction/${it.txHash}`, target: '_blank', rel: 'noopener noreferrer' }, 'Xem trên Cardanoscan')));
+    row.addEventListener('toggle', () => { if (row.open) state.openTx.add(it.txHash); else state.openTx.delete(it.txHash); });
+    box.append(row);
+  }
+  if (hst.loading) box.append(h('p.hint', 'Đang tải…'));
+  if (hst.error) box.append(h('p.warn', icon('warn'), hst.error));
+  if (!hst.loading && !hst.error && hst.page > 0 && hst.items.length === 0) box.append(h('p.hint', 'Chưa có giao dịch nào.'));
+  if (!hst.loading && hst.more && hst.page > 0) box.append(h('button.secondary.small', { type: 'button', onclick: () => loadHistory(true) }, 'Xem thêm'));
+  if (!hst.loading && hst.error) box.append(h('button.secondary.small', { type: 'button', onclick: () => loadHistory(true) }, 'Thử lại'));
+  return box;
 }
 
 const drepLabel = d => ({ drep_always_abstain: 'Luôn bỏ phiếu trắng', drep_always_no_confidence: 'Luôn bất tín nhiệm' }[d] || `${d.slice(0, 14)}…`);
