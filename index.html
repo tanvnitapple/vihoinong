@@ -1,0 +1,3276 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pZ1bxq0huzWU7teeBuoJPgHxFEn6stPdQgIY9OvrJ9M='; style-src 'sha256-6p/gIcyACQpNTNQ4SLFi6fnzDjuocajAI/TnXqcyLVw='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://api.koios.rest; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F4F5F7">
+<title>Ví nóng</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ví nóng">
+<style>*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+body.cold{--bg:#0B1622;--card:#132436;--line:#22384F;--line2:#3A5876;--text:#EAF2FA;--muted:#9DB2C7;--accent:#5CC8F5;--on-accent:#06202E;--ok:#7BE0B4;--ok-bg:#12382C;--warn:#F5C56B;--warn-bg:#2A2110;--bad:#FF9C8F;--bad-bg:#3A1A17;--field:#0B1622;--bar:#0F1D2C;font-family:Roboto,system-ui,sans-serif}
+body.hot{--bg:#F4F5F7;--card:#FFFFFF;--line:#E1E4E9;--line2:#C9CED6;--text:#15181D;--muted:#5B6470;--accent:#C2410C;--on-accent:#FFFFFF;--ok:#116B45;--ok-bg:#DDF3E8;--warn:#8A5300;--warn-bg:#FFF1D6;--bad:#A3271B;--bad-bg:#FBE4E1;--field:#FFFFFF;--bar:#FFFFFF;font-family:-apple-system,"SF Pro Text",system-ui,sans-serif}
+body{background:var(--bg);color:var(--text)}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top) + 20px) 20px 10px}
+h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.3px}
+h2{margin:0;font-size:18px;font-weight:700}
+h3{margin:0 0 8px;font-size:13px;font-weight:600;letter-spacing:.8px;color:var(--muted)}
+p{margin:0}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:6px 20px 20px}
+section{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card p,.hint{font-size:14px;color:var(--muted)}
+.card.center{align-items:center;text-align:center}
+.row{display:flex;align-items:center;gap:10px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.spacer{flex:1}
+.badge{font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;white-space:nowrap}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.badge.live{background:var(--warn-bg);color:var(--warn)}
+.icon{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;color:inherit;cursor:pointer;min-height:48px;border-radius:14px;border:1px solid transparent;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:16px;text-align:center}
+button:disabled{opacity:.55}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--on-accent);min-height:58px;font-size:17px;font-weight:700}
+button.secondary{background:var(--card);border-color:var(--line2)}
+button.ghost{background:transparent;border-color:var(--line2);color:var(--muted)}
+button.danger{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+button.link{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:14px;font-weight:400;min-height:44px}
+button.small{min-height:44px;font-size:14px;padding:0 12px;border-radius:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+input,textarea,select{font:inherit;color:var(--text);background:var(--field);border:1px solid var(--line2);border-radius:12px;padding:12px;min-height:48px;width:100%}
+textarea{resize:vertical}
+.inline{display:flex;gap:8px;align-items:stretch}
+.inline>input{flex:1;min-width:0}
+.inline>button{flex:none}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;word-break:break-all;color:var(--text)}
+.caps{font-size:13px;letter-spacing:1px;color:var(--muted)}
+.amount{font-size:34px;font-weight:700;letter-spacing:-.5px}
+.amount.small{font-size:22px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:10px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:none;padding-bottom:0}
+.kv:first-child{padding-top:0}
+.kv>span{color:var(--muted)}
+.kv>strong{text-align:right;font-weight:600}
+.kv.col{flex-direction:column;gap:4px}
+.kv.col>strong{text-align:left}
+.kv.bad>strong{color:var(--bad)}
+.warn{display:flex;gap:10px;font-size:14px;color:var(--warn);background:var(--warn-bg);border-radius:12px;padding:12px}
+.asset{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.asset>div{flex:1;display:flex;flex-direction:column;min-width:0}
+.asset span{font-size:13px;color:var(--muted)}
+.asset>strong{font-size:16px}
+.coin{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.asset span.coin.ada{background:#1E4FD8;color:#fff;font-size:12px}
+.asset span.coin.night{background:#EAF2FA;color:#0B1622;font-size:10px}
+body.hot .asset span.coin.night{background:#15181D;color:#fff}
+.net-row{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:8px 0;border-bottom:1px solid var(--line)}
+.net-row:last-child{border-bottom:none}
+.net-row strong{color:var(--ok)}
+.net-row.bad strong{color:var(--bad)}
+.gate{flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center;padding:32px 24px;text-align:center}
+.gate p{color:var(--muted)}
+.gate .card{text-align:left}
+.gate-icon{align-self:center;width:72px;height:72px;border-radius:50%;background:var(--warn-bg);color:var(--warn);display:flex;align-items:center;justify-content:center}
+.gate-icon .icon{width:36px;height:36px}
+.words{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;counter-reset:w}
+.words li{counter-increment:w;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;-webkit-user-select:none;user-select:none}
+.words li::before{content:counter(w);display:block;font-size:11px;font-weight:400;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.steps li{font-size:13px;color:var(--muted);border-top:4px solid var(--line);padding-top:6px}
+.steps li.done{color:var(--ok);border-color:var(--ok)}
+.steps li.active{color:var(--accent);border-color:var(--accent);font-weight:700}
+.qr-box{display:flex;flex-direction:column;align-items:center;gap:8px}
+canvas.qr{width:100%;max-width:340px;height:auto;border-radius:12px;background:#fff;image-rendering:pixelated}
+.qr-label{font-size:13px;color:var(--muted);text-align:center}
+.scanner{display:flex;flex-direction:column;gap:12px}
+.viewfinder{position:relative;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#000;border:2px solid var(--accent)}
+.viewfinder video{width:100%;height:100%;object-fit:cover;display:block}
+.scan-status{text-align:center;font-size:15px;min-height:22px}
+.tabbar{position:sticky;bottom:0;display:flex;background:var(--bar);border-top:1px solid var(--line);padding:6px 8px calc(env(safe-area-inset-bottom) + 8px)}
+.tabbar button{flex:1;flex-direction:column;gap:3px;font-size:12px;font-weight:500;color:var(--muted);background:none;border:none;min-height:52px;padding:0 4px;border-radius:10px}
+.tabbar button.active{color:var(--accent);font-weight:700}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--line);border-radius:12px;padding:4px}
+.seg button{min-height:44px;border-radius:9px;background:transparent;font-size:15px}
+.seg button.active{background:var(--card);font-weight:700}
+.balance{background:var(--accent);color:var(--on-accent);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:4px}
+.balance .amount{font-size:36px}
+.balance span{font-size:13px}
+.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.quick button{flex-direction:column;gap:6px;min-height:76px;font-size:13px;background:var(--card);border-color:var(--line);padding:0 4px}
+.quick .icon{color:var(--accent)}
+.choice{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.choice:last-child{border-bottom:none}
+.choice>div{flex:1;display:flex;flex-direction:column;min-width:0}
+.choice span{font-size:13px;color:var(--muted);word-break:break-all}
+.choice button{min-height:44px;font-size:14px}
+.choice.selected button{background:var(--accent);color:var(--on-accent)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;padding:20px;z-index:20}
+.overlay .card{width:100%;max-width:440px}
+.overlay .card p{color:var(--text);font-size:16px}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 84px);margin:0 auto;max-width:440px;background:var(--text);color:var(--bg);padding:14px 16px;border-radius:14px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;text-align:center}
+#toast.show{opacity:1}
+#toast.error{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+a{color:var(--accent);font-weight:600}
+</style>
+</head>
+<body class="hot">
+<div id="app"></div>
+<script>(() => {
+'use strict';
+// ---- core/bip39-wordlist.js ----
+// Official BIP-39 English Wordlist (2048 words)
+const BIP39_WORDLIST = [
+  "abandon","ability","able","about","above","absent","absorb","abstract","absurd","abuse",
+  "access","accident","account","accuse","achieve","acid","acoustic","acquire","across","act",
+  "action","actor","actress","actual","adapt","add","addict","address","adjust","admit",
+  "adult","advance","advice","aerobic","affair","afford","afraid","again","age","agent",
+  "agree","ahead","aim","air","airport","aisle","alarm","album","alcohol","alert",
+  "alien","all","alley","allow","almost","alone","alpha","already","also","alter",
+  "always","amateur","amazing","among","amount","amused","analyst","anchor","ancient","anger",
+  "angle","angry","animal","ankle","announce","annual","another","answer","antenna","antique",
+  "anxiety","any","apart","apology","appear","apple","approve","april","arch","arctic",
+  "area","arena","argue","arm","armed","armor","army","around","arrange","arrest",
+  "arrive","arrow","art","artefact","artist","artwork","ask","aspect","assault","asset",
+  "assist","assume","asthma","athlete","atom","attack","attend","attitude","attract","auction",
+  "audit","august","aunt","author","auto","autumn","average","avocado","avoid","awake",
+  "aware","away","awesome","awful","awkward","axis","baby","bachelor","bacon","badge",
+  "bag","balance","balcony","ball","bamboo","banana","banner","bar","barely","bargain",
+  "barrel","base","basic","basket","battle","beach","bean","beauty","because","become",
+  "beef","before","begin","behave","behind","believe","below","belt","bench","benefit",
+  "best","betray","better","between","beyond","bicycle","bid","bike","bind","biology",
+  "bird","birth","bitter","black","blade","blame","blanket","blast","bleak","bless",
+  "blind","blood","blossom","blouse","blue","blur","blush","board","boat","body",
+  "boil","bomb","bone","bonus","book","boost","border","boring","borrow","boss",
+  "bottom","bounce","box","boy","bracket","brain","brand","brass","brave","bread",
+  "breeze","brick","bridge","brief","bright","bring","brisk","broccoli","broken","bronze",
+  "broom","brother","brown","brush","bubble","buddy","budget","buffalo","build","bulb",
+  "bulk","bullet","bundle","bunker","burden","burger","burst","bus","business","busy",
+  "butter","buyer","buzz","cabbage","cabin","cable","cactus","cage","cake","call",
+  "calm","camera","camp","can","canal","cancel","candy","cannon","canoe","canvas",
+  "canyon","capable","capital","captain","car","carbon","card","cargo","carpet","carry",
+  "cart","case","cash","casino","castle","casual","cat","catalog","catch","category",
+  "cattle","caught","cause","caution","cave","ceiling","celery","cement","census","century",
+  "cereal","certain","chair","chalk","champion","change","chaos","chapter","charge","chase",
+  "chat","cheap","check","cheese","chef","cherry","chest","chicken","chief","child",
+  "chimney","choice","choose","chronic","chuckle","chunk","churn","cigar","cinnamon","circle",
+  "citizen","city","civil","claim","clap","clarify","claw","clay","clean","clerk",
+  "clever","click","client","cliff","climb","clinic","clip","clock","clog","close",
+  "cloth","cloud","clown","club","clump","cluster","clutch","coach","coast","coconut",
+  "code","coffee","coil","coin","collect","color","column","combine","come","comfort",
+  "comic","common","company","concert","conduct","confirm","congress","connect","consider","control",
+  "convince","cook","cool","copper","copy","coral","core","corn","correct","cost",
+  "cotton","couch","country","couple","course","cousin","cover","coyote","crack","cradle",
+  "craft","cram","crane","crash","crater","crawl","crazy","cream","credit","creek",
+  "crew","cricket","crime","crisp","critic","crop","cross","crouch","crowd","crucial",
+  "cruel","cruise","crumble","crunch","crush","cry","crystal","cube","culture","cup",
+  "cupboard","curious","current","curtain","curve","cushion","custom","cute","cycle","dad",
+  "damage","damp","dance","danger","daring","dash","daughter","dawn","day","deal",
+  "debate","debris","decade","december","decide","decline","decorate","decrease","deer","defense",
+  "define","defy","degree","delay","deliver","demand","demise","denial","dentist","deny",
+  "depart","depend","deposit","depth","deputy","derive","describe","desert","design","desk",
+  "despair","destroy","detail","detect","develop","device","devote","diagram","dial","diamond",
+  "diary","dice","diesel","diet","differ","digital","dignity","dilemma","dinner","dinosaur",
+  "direct","dirt","disagree","discover","disease","dish","dismiss","disorder","display","distance",
+  "divert","divide","divorce","dizzy","doctor","document","dog","doll","dolphin","domain",
+  "donate","donkey","donor","door","dose","double","dove","draft","dragon","drama",
+  "drastic","draw","dream","dress","drift","drill","drink","drip","drive","drop",
+  "drum","dry","duck","dumb","dune","during","dust","dutch","duty","dwarf",
+  "dynamic","eager","eagle","early","earn","earth","easily","east","easy","echo",
+  "ecology","economy","edge","edit","educate","effort","egg","eight","either","elbow",
+  "elder","electric","elegant","element","elephant","elevator","elite","else","embark","embody",
+  "embrace","emerge","emotion","employ","empower","empty","enable","enact","end","endless",
+  "endorse","enemy","energy","enforce","engage","engine","enhance","enjoy","enlist","enough",
+  "enrich","enroll","ensure","enter","entire","entry","envelope","episode","equal","equip",
+  "era","erase","erode","erosion","error","erupt","escape","essay","essence","estate",
+  "eternal","ethics","evidence","evil","evoke","evolve","exact","example","excess","exchange",
+  "excite","exclude","excuse","execute","exercise","exhaust","exhibit","exile","exist","exit",
+  "exotic","expand","expect","expire","explain","expose","express","extend","extra","eye",
+  "eyebrow","fabric","face","faculty","fade","faint","faith","fall","false","fame",
+  "family","famous","fan","fancy","fantasy","farm","fashion","fat","fatal","father",
+  "fatigue","fault","favorite","feature","february","federal","fee","feed","feel","female",
+  "fence","festival","fetch","fever","few","fiber","fiction","field","figure","file",
+  "film","filter","final","find","fine","finger","finish","fire","firm","first",
+  "fiscal","fish","fit","fitness","fix","flag","flame","flash","flat","flavor",
+  "flee","flight","flip","float","flock","floor","flower","fluid","flush","fly",
+  "foam","focus","fog","foil","fold","follow","food","foot","force","forest",
+  "forget","fork","fortune","forum","forward","fossil","foster","found","fox","fragile",
+  "frame","frequent","fresh","friend","fringe","frog","front","frost","frown","frozen",
+  "fruit","fuel","fun","funny","furnace","fury","future","gadget","gain","galaxy",
+  "gallery","game","gap","garage","garbage","garden","garlic","garment","gas","gasp",
+  "gate","gather","gauge","gaze","general","genius","genre","gentle","genuine","gesture",
+  "ghost","giant","gift","giggle","ginger","giraffe","girl","give","glad","glance",
+  "glare","glass","glide","glimpse","globe","gloom","glory","glove","glow","glue",
+  "goat","goddess","gold","good","goose","gorilla","gospel","gossip","govern","gown",
+  "grab","grace","grain","grant","grape","grass","gravity","great","green","grid",
+  "grief","grit","grocery","group","grow","grunt","guard","guess","guide","guilt",
+  "guitar","gun","gym","habit","hair","half","hammer","hamster","hand","happy",
+  "harbor","hard","harsh","harvest","hat","have","hawk","hazard","head","health",
+  "heart","heavy","hedgehog","height","hello","helmet","help","hen","hero","hidden",
+  "high","hill","hint","hip","hire","history","hobby","hockey","hold","hole",
+  "holiday","hollow",
+  "home","honey","hood","hope","horn","horror","horse","hospital","host","hotel",
+  "hour","hover","hub","huge","human","humble","humor","hundred","hungry","hunt",
+  "hurdle","hurry","hurt","husband","hybrid","ice","icon","idea","identify","idle",
+  "ignore","ill","illegal","illness","image","imitate","immense","immune","impact","impose",
+  "improve","impulse","inch","include","income","increase","index","indicate","indoor","industry",
+  "infant","inflict","inform","inhale","inherit","initial","inject","injury","inmate","inner",
+  "innocent","input","inquiry","insane","insect","inside","inspire","install","intact","interest",
+  "into","invest","invite","involve","iron","island","isolate","issue","item","ivory",
+  "jacket","jaguar","jar","jazz","jealous","jeans","jelly","jewel","job","join",
+  "joke","journey","joy","judge","juice","jump","jungle","junior","junk","just",
+  "kangaroo","keen","keep","ketchup","key","kick","kid","kidney","kind","kingdom",
+  "kiss","kit","kitchen","kite","kitten","kiwi","knee","knife","knock","know",
+  "lab","label","labor","ladder","lady","lake","lamp","language","laptop","large",
+  "later","latin","laugh","laundry","lava","law","lawn","lawsuit","layer","lazy",
+  "leader","leaf","learn","leave","lecture","left","leg","legal","legend","leisure",
+  "lemon","lend","length","lens","leopard","lesson","letter","level","liar","liberty",
+  "library","license","life","lift","light","like","limb","limit","link","lion",
+  "liquid","list","little","live","lizard","load","loan","lobster","local","lock",
+  "logic","lonely","long","loop","lottery","loud","lounge","love","loyal","lucky",
+  "luggage","lumber","lunar","lunch","luxury","lyrics","machine","mad","magic","magnet",
+  "maid","mail","main","major","make","mammal","man","manage","mandate","mango",
+  "mansion","manual","maple","marble","march","margin","marine","market","marriage","mask",
+  "mass","master","match","material","math","matrix","matter","maximum","maze","meadow",
+  "mean","measure","meat","mechanic","medal","media","melody","melt","member","memory",
+  "mention","menu","mercy","merge","merit","merry","mesh","message","metal","method",
+  "middle","midnight","milk","million","mimic","mind","minimum","minor","minute","miracle",
+  "mirror","misery","miss","mistake","mix","mixed","mixture","mobile","model","modify",
+  "mom","moment","monitor","monkey","monster","month","moon","moral","more","morning",
+  "mosquito","mother","motion","motor","mountain","mouse","move","movie","much","muffin",
+  "mule","multiply","muscle","museum","mushroom","music","must","mutual","myself","mystery",
+  "myth","naive","name","napkin","narrow","nasty","nation","nature","near","neck",
+  "need","negative","neglect","neither","nephew","nerve","nest","net","network","neutral",
+  "never","news","next","nice","night","noble","noise","nominee","noodle","normal",
+  "north","nose","notable","note","nothing","notice","novel","now","nuclear","number","nurse","nut","oak","obey","object","oblige","obscure","observe","obtain",
+  "obvious","occur","ocean","october","odor","off","offer","office","often","oil",
+  "okay","old","olive","olympic","omit","once","one","onion","online","only",
+  "open","opera","opinion","oppose","option","orange","orbit","orchard","order","ordinary",
+  "organ","orient","original","orphan","ostrich","other","outdoor","outer","output","outside",
+  "oval","oven","over","own","owner","oxygen","oyster","ozone","pact","paddle",
+  "page","pair","palace","palm","panda","panel","panic","panther","paper","parade",
+  "parent","park","parrot","party","pass","patch","path","patient","patrol","pattern",
+  "pause","pave","payment","peace","peanut","pear","peasant","pelican","pen","penalty",
+  "pencil","people","pepper","perfect","permit","person","pet","phone","photo","phrase",
+  "physical","piano","picnic","picture","piece","pig","pigeon","pill","pilot","pink",
+  "pioneer","pipe","pistol","pitch","pizza","place","planet","plastic","plate","play",
+  "please","pledge","pluck","plug","plunge","poem","poet","point","polar","pole",
+  "police","pond","pony","pool","popular","portion","position","possible","post","potato",
+  "pottery","poverty","powder","power","practice","praise","predict","prefer","prepare","present",
+  "pretty","prevent","price","pride","primary","print","priority","prison","private","prize",
+  "problem","process","produce","profit","program","project","promote","proof","property","prosper",
+  "protect","proud","provide","public","pudding","pull","pulp","pulse","pumpkin","punch",
+  "pupil","puppy","purchase","purity","purpose","purse","push","put","puzzle","pyramid",
+  "quality","quantum","quarter","question","quick","quit","quiz","quote","rabbit","raccoon",
+  "race","rack","radar","radio","rail","rain","raise","rally","ramp","ranch","random",
+  "range","rapid","rare","rate","rather","raven","raw","razor","ready","real",
+  "reason","rebel","rebuild","recall","receive","recipe","record","recycle","reduce","reflect",
+  "reform","refuse","region","regret","regular","reject","relax","release","relief","rely",
+  "remain","remember","remind","remove","render","renew","rent","reopen","repair","repeat",
+  "replace","report","require","rescue","resemble","resist","resource","response","result","retire",
+  "retreat","return","reunion","reveal","review","reward","rhythm","rib","ribbon","rice",
+  "rich","ride","ridge","rifle","right","rigid","ring","riot","ripple","risk",
+  "ritual","rival","river","road","roast","robot","robust","rocket","romance","roof",
+  "rookie","room","rose","rotate","rough","round","route","royal","rubber","rude",
+  "rug","rule","run","runway","rural","sad","saddle","sadness","safe","sail",
+  "salad","salmon","salon","salt","salute","same","sample","sand","satisfy","satoshi",
+  "sauce","sausage","save","say","scale","scan","scare","scatter","scene","scheme",
+  "school","science","scissors","scorpion","scout","scrap","screen","script","scrub","sea",
+  "search","season","seat","second","secret","section","security","seed","seek","segment",
+  "select","sell","seminar","senior","sense","sentence","series","service","session","settle",
+  "setup","seven","shadow","shaft","shallow","share","shed","shell","sheriff","shield",
+  "shift","shine","ship","shiver","shock","shoe","shoot","shop","short","shoulder",
+  "shove","shrimp","shrug","shuffle","shy","sibling","sick","side","siege","sight",
+  "sign","silent","silk","silly","silver","similar","simple","since","sing","siren",
+  "sister","situate","six","size","skate","sketch","ski","skill","skin","skirt",
+  "skull","slab","slam","sleep","slender","slice","slide","slight","slim","slogan",
+  "slot","slow","slush","small","smart","smile","smoke","smooth","snack","snake",
+  "snap","sniff","snow","soap","soccer","social","sock","soda","soft","solar",
+  "soldier","solid","solution","solve","someone","song","soon","sorry","sort","soul",
+  "sound","soup","source","south","space","spare","spatial","spawn","speak","special",
+  "speed",
+  "spell","spend","sphere","spice","spider","spike","spin","spirit","split","spoil",
+  "sponsor","spoon","sport","spot","spray","spread","spring","spy","square","squeeze",
+  "squirrel","stable","stadium","staff","stage","stairs","stamp","stand","start","state",
+  "stay","steak","steel","stem","step","stereo","stick","still","sting","stock",
+  "stomach","stone","stool","story","stove","strategy","street","strike","strong","struggle",
+  "student","stuff","stumble","style","subject","submit","subway","success","such","sudden",
+  "suffer","sugar","suggest","suit","summer","sun","sunny","sunset","super","supply",
+  "supreme","sure","surface","surge","surprise","surround","survey","suspect","sustain","swallow",
+  "swamp","swap","swarm","swear","sweet","swift","swim","swing","switch","sword",
+  "symbol","symptom","syrup","system","table","tackle","tag","tail","talent","talk",
+  "tank","tape","target","task","taste","tattoo","taxi","teach","team","tell",
+  "ten","tenant","tennis","tent","term","test","text","thank","that","theme",
+  "then","theory","there","they","thing","this","thought","three","thrive","throw",
+  "thumb","thunder","ticket","tide","tiger","tilt","timber","time","tiny","tip",
+  "tired","tissue","title","toast","tobacco","today","toddler","toe","together","toilet",
+  "token","tomato","tomorrow","tone","tongue","tonight","tool","tooth","top","topic",
+  "topple","torch","tornado","tortoise","toss","total","tourist","toward","tower","town",
+  "toy","track","trade","traffic","tragic","train","transfer","trap","trash","travel",
+  "tray","treat","tree","trend","trial","tribe","trick","trigger","trim","trip",
+  "trophy","trouble","truck","true","truly","trumpet","trust","truth","try","tube",
+  "tuition","tumble","tuna","tunnel","turkey","turn","turtle","twelve","twenty","twice",
+  "twin","twist","two","type","typical","ugly","umbrella","unable","unaware","uncle",
+  "uncover","under","undo","unfair","unfold","unhappy","uniform","unique","unit","universe",
+  "unknown","unlock","until","unusual","unveil","update","upgrade","uphold","upon","upper",
+  "upset","urban","urge","usage","use","used","useful","useless","usual","utility",
+  "vacant","vacuum","vague","valid","valley","valve","van","vanish","vapor","various",
+  "vast","vault","vehicle","velvet","vendor","venture","venue","verb","verify","version",
+  "very","vessel","veteran","viable","vibrant","vicious","victory","video","view","village",
+  "vintage","violin","virtual","virus","visa","visit","visual","vital","vivid","vocal",
+  "voice","void","volcano","volume","vote","voyage","wage","wagon","wait","walk",
+  "wall","walnut","want","warfare","warm","warrior","wash","wasp","waste","water",
+  "wave","way","wealth","weapon","wear","weasel","weather","web","wedding","weekend",
+  "weird","welcome","west","wet","whale","what","wheat","wheel","when","where",
+  "whip","whisper","wide","width","wife","wild","will","win","window","wine",
+  "wing","wink","winner","winter","wire","wisdom","wise","wish","witness","wolf",
+  "woman","wonder","wood","wool","word","work","world","worry","worth","wrap",
+  "wreck","wrestle","wrist","write","wrong","yard","year","yellow","you","young",
+  "youth","zebra","zero","zone","zoo"
+];
+
+// ---- core/crypto.js ----
+// ============================================================================
+// core/crypto.js — Lõi mật mã Cardano (CIP-1852, Icarus BIP32-Ed25519 V2)
+// Không phụ thuộc thư viện ngoài. Các hàm băm / đường cong / dẫn xuất khóa đã
+// được đối chiếu với Node.js crypto, Python hashlib và vector chuẩn (tests/).
+// ============================================================================
+
+
+
+// ----------------------------------------------------------------------------
+// 1. Byte & Hex Utilities
+// ----------------------------------------------------------------------------
+function bytesToHex(bytes) {
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function hexToBytes(hex) {
+  const clean = hex.replace(/^0x/i, '').replace(/\s+/g, '');
+  if (clean.length % 2 !== 0) throw new Error('Chuỗi Hex không hợp lệ');
+  const out = new Uint8Array(clean.length / 2);
+  for (let i = 0; i < out.length; i++) {
+    out[i] = parseInt(clean.substr(i * 2, 2), 16);
+  }
+  return out;
+}
+
+function concatBytes(...arrays) {
+  const total = arrays.reduce((acc, a) => acc + a.length, 0);
+  const res = new Uint8Array(total);
+  let offset = 0;
+  for (const a of arrays) {
+    res.set(a, offset);
+    offset += a.length;
+  }
+  return res;
+}
+
+function utf8ToBytes(str) {
+  return new TextEncoder().encode(str);
+}
+
+function bytesToUtf8(bytes) {
+  return new TextDecoder().decode(bytes);
+}
+
+// ----------------------------------------------------------------------------
+// 2. Pure Synchronous SHA-256 & SHA-512 & HMAC & PBKDF2
+// ----------------------------------------------------------------------------
+const SHA256_K = new Uint32Array([
+  0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+  0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+  0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+  0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+  0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+  0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+  0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+  0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+]);
+
+function sha256(msgBytes) {
+  const ml = msgBytes.length;
+  const bitLen = ml * 8;
+  const padLen = ((ml + 9 + 63) & ~63);
+  const buf = new Uint8Array(padLen);
+  buf.set(msgBytes);
+  buf[ml] = 0x80;
+  const dv = new DataView(buf.buffer);
+  dv.setUint32(padLen - 8, Math.floor(bitLen / 0x100000000), false);
+  dv.setUint32(padLen - 4, bitLen >>> 0, false);
+
+  let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
+  let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+  const w = new Uint32Array(64);
+
+  for (let off = 0; off < padLen; off += 64) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4, false);
+    for (let i = 16; i < 64; i++) {
+      const x = w[i - 15], y = w[i - 2];
+      const s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+      const s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let i = 0; i < 64; i++) {
+      const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = (h + S1 + ch + SHA256_K[i] + w[i]) >>> 0;
+      const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const temp2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + temp1) >>> 0;
+      d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+    }
+    h0 = (h0 + a) >>> 0; h1 = (h1 + b) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0;
+    h4 = (h4 + e) >>> 0; h5 = (h5 + f) >>> 0; h6 = (h6 + g) >>> 0; h7 = (h7 + h) >>> 0;
+  }
+  const out = new Uint8Array(32);
+  const odv = new DataView(out.buffer);
+  [h0, h1, h2, h3, h4, h5, h6, h7].forEach((v, i) => odv.setUint32(i * 4, v, false));
+  return out;
+}
+
+const SHA512_K = [
+  0x428a2f98d728ae22n,0x7137449123ef65cdn,0xb5c0fbcfec4d3b2fn,0xe9b5dba58189dbbcn,
+  0x3956c25bf348b538n,0x59f111f1b605d019n,0x923f82a4af194f9bn,0xab1c5ed5da6d8118n,
+  0xd807aa98a3030242n,0x12835b0145706fben,0x243185be4ee4b28cn,0x550c7dc3d5ffb4e2n,
+  0x72be5d74f27b896fn,0x80deb1fe3b1696b1n,0x9bdc06a725c71235n,0xc19bf174cf692694n,
+  0xe49b69c19ef14ad2n,0xefbe4786384f25e3n,0x0fc19dc68b8cd5b5n,0x240ca1cc77ac9c65n,
+  0x2de92c6f592b0275n,0x4a7484aa6ea6e483n,0x5cb0a9dcbd41fbd4n,0x76f988da831153b5n,
+  0x983e5152ee66dfabn,0xa831c66d2db43210n,0xb00327c898fb213fn,0xbf597fc7beef0ee4n,
+  0xc6e00bf33da88fc2n,0xd5a79147930aa725n,0x06ca6351e003826fn,0x142929670a0e6e70n,
+  0x27b70a8546d22ffcn,0x2e1b21385c26c926n,0x4d2c6dfc5ac42aedn,0x53380d139d95b3dfn,
+  0x650a73548baf63den,0x766a0abb3c77b2a8n,0x81c2c92e47edaee6n,0x92722c851482353bn,
+  0xa2bfe8a14cf10364n,0xa81a664bbc423001n,0xc24b8b70d0f89791n,0xc76c51a30654be30n,
+  0xd192e819d6ef5218n,0xd69906245565a910n,0xf40e35855771202an,0x106aa07032bbd1b8n,
+  0x19a4c116b8d2d0c8n,0x1e376c085141ab53n,0x2748774cdf8eeb99n,0x34b0bcb5e19b48a8n,
+  0x391c0cb3c5c95a63n,0x4ed8aa4ae3418acbn,0x5b9cca4f7763e373n,0x682e6ff3d6b2b8a3n,
+  0x748f82ee5defb2fcn,0x78a5636f43172f60n,0x84c87814a1f0ab72n,0x8cc702081a6439ecn,
+  0x90befffa23631e28n,0xa4506cebde82bde9n,0xbef9a3f7b2c67915n,0xc67178f2e372532bn,
+  0xca273eceea26619cn,0xd186b8c721c0c207n,0xeada7dd6cde0eb1en,0xf57d4f7fee6ed178n,
+  0x06f067aa72176fban,0x0a637dc5a2c898a6n,0x113f9804bef90daen,0x1b710b35131c471bn,
+  0x28db77f523047d84n,0x32caab7b40c72493n,0x3c9ebe0a15c9bebcn,0x431d67c49c100d4cn,
+  0x4cc5d4becb3e42b6n,0x597f299cfc657e2an,0x5fcb6fab3ad6faecn,0x6c44198c4a475817n
+];
+
+const MASK64 = 0xffffffffffffffffn;
+function rotr64(x, n) {
+  return ((x >> BigInt(n)) | ((x << BigInt(64 - n)) & MASK64));
+}
+
+function sha512(msgBytes) {
+  const ml = msgBytes.length;
+  const bitLen = BigInt(ml) * 8n;
+  const padLen = ((ml + 17 + 127) & ~127);
+  const buf = new Uint8Array(padLen);
+  buf.set(msgBytes);
+  buf[ml] = 0x80;
+  const dv = new DataView(buf.buffer);
+  dv.setBigUint64(padLen - 8, bitLen, false);
+
+  let h0 = 0x6a09e667f3bcc908n, h1 = 0xbb67ae8584caa73bn;
+  let h2 = 0x3c6ef372fe94f82bn, h3 = 0xa54ff53a5f1d36f1n;
+  let h4 = 0x510e527fade682d1n, h5 = 0x9b05688c2b3e6c1fn;
+  let h6 = 0x1f83d9abfb41bd6bn, h7 = 0x5be0cd19137e2179n;
+  const w = new Array(80).fill(0n);
+
+  for (let off = 0; off < padLen; off += 128) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getBigUint64(off + i * 8, false);
+    for (let i = 16; i < 80; i++) {
+      const s0 = rotr64(w[i - 15], 1) ^ rotr64(w[i - 15], 8) ^ (w[i - 15] >> 7n);
+      const s1 = rotr64(w[i - 2], 19) ^ rotr64(w[i - 2], 61) ^ (w[i - 2] >> 6n);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) & MASK64;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let i = 0; i < 80; i++) {
+      const S1 = rotr64(e, 14) ^ rotr64(e, 18) ^ rotr64(e, 41);
+      const ch = (e & f) ^ ((~e & MASK64) & g);
+      const temp1 = (h + S1 + ch + SHA512_K[i] + w[i]) & MASK64;
+      const S0 = rotr64(a, 28) ^ rotr64(a, 34) ^ rotr64(a, 39);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const temp2 = (S0 + maj) & MASK64;
+      h = g; g = f; f = e; e = (d + temp1) & MASK64;
+      d = c; c = b; b = a; a = (temp1 + temp2) & MASK64;
+    }
+    h0 = (h0 + a) & MASK64; h1 = (h1 + b) & MASK64;
+    h2 = (h2 + c) & MASK64; h3 = (h3 + d) & MASK64;
+    h4 = (h4 + e) & MASK64; h5 = (h5 + f) & MASK64;
+    h6 = (h6 + g) & MASK64; h7 = (h7 + h) & MASK64;
+  }
+  const out = new Uint8Array(64);
+  const odv = new DataView(out.buffer);
+  [h0, h1, h2, h3, h4, h5, h6, h7].forEach((v, i) => odv.setBigUint64(i * 8, v, false));
+  return out;
+}
+
+function hmacSha512(keyBytes, dataBytes) {
+  const blockSize = 128;
+  let k = keyBytes.length > blockSize ? sha512(keyBytes) : keyBytes;
+  const ipad = new Uint8Array(blockSize).fill(0x36);
+  const opad = new Uint8Array(blockSize).fill(0x5c);
+  for (let i = 0; i < k.length; i++) {
+    ipad[i] ^= k[i];
+    opad[i] ^= k[i];
+  }
+  const inner = sha512(concatBytes(ipad, dataBytes));
+  return sha512(concatBytes(opad, inner));
+}
+
+function pbkdf2Sha512(passwordBytes, saltBytes, iterations, dkLen) {
+  const hLen = 64;
+  const blocks = Math.ceil(dkLen / hLen);
+  const out = new Uint8Array(blocks * hLen);
+  for (let b = 1; b <= blocks; b++) {
+    const idxBytes = new Uint8Array(4);
+    new DataView(idxBytes.buffer).setUint32(0, b, false);
+    let u = hmacSha512(passwordBytes, concatBytes(saltBytes, idxBytes));
+    const t = new Uint8Array(u);
+    for (let i = 1; i < iterations; i++) {
+      u = hmacSha512(passwordBytes, u);
+      for (let j = 0; j < hLen; j++) t[j] ^= u[j];
+    }
+    out.set(t, (b - 1) * hLen);
+  }
+  return out.slice(0, dkLen);
+}
+
+// ----------------------------------------------------------------------------
+// 3. Blake2b (224-bit & 256-bit) for Cardano KeyHash & Transaction Hashing
+// ----------------------------------------------------------------------------
+const BLAKE2B_IV = [
+  0x6a09e667f3bcc908n, 0xbb67ae8584caa73bn,
+  0x3c6ef372fe94f82bn, 0xa54ff53a5f1d36f1n,
+  0x510e527fade682d1n, 0x9b05688c2b3e6c1fn,
+  0x1f83d9abfb41bd6bn, 0x5be0cd19137e2179n
+];
+
+const BLAKE2B_SIGMA = [
+  [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+  [14,10,4,8,9,15,13,6,1,12,0,2,11,7,5,3],
+  [11,8,12,0,5,2,15,13,10,14,3,6,7,1,9,4],
+  [7,9,3,1,13,12,11,14,2,6,5,10,4,0,15,8],
+  [9,0,5,7,2,4,10,15,14,1,11,12,6,8,3,13],
+  [2,12,6,10,0,11,8,3,4,13,7,5,15,14,1,9],
+  [12,5,1,15,14,13,4,10,0,7,6,3,9,2,8,11],
+  [13,11,7,14,12,1,3,9,5,0,15,4,8,6,2,10],
+  [6,15,14,9,11,3,0,8,12,2,13,7,1,4,10,5],
+  [10,2,8,4,7,6,1,5,15,11,9,14,3,12,13,0],
+  [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+  [14,10,4,8,9,15,13,6,1,12,0,2,11,7,5,3]
+];
+
+function blake2b(inputBytes, outLen = 32) {
+  const h = BLAKE2B_IV.slice();
+  h[0] ^= 0x01010000n ^ BigInt(outLen);
+
+  const m = new Array(16).fill(0n);
+  const v = new Array(16).fill(0n);
+
+  function g(a, b, c, d, x, y) {
+    v[a] = (v[a] + v[b] + x) & MASK64;
+    v[d] = rotr64(v[d] ^ v[a], 32);
+    v[c] = (v[c] + v[d]) & MASK64;
+    v[b] = rotr64(v[b] ^ v[c], 24);
+    v[a] = (v[a] + v[b] + y) & MASK64;
+    v[d] = rotr64(v[d] ^ v[a], 16);
+    v[c] = (v[c] + v[d]) & MASK64;
+    v[b] = rotr64(v[b] ^ v[c], 63);
+  }
+
+  function compress(block, t, isLast) {
+    for (let i = 0; i < 8; i++) {
+      v[i] = h[i];
+      v[i + 8] = BLAKE2B_IV[i];
+    }
+    v[12] ^= BigInt(t);
+    if (isLast) v[14] ^= MASK64;
+
+    const dv = new DataView(block.buffer, block.byteOffset, 128);
+    for (let i = 0; i < 16; i++) m[i] = dv.getBigUint64(i * 8, true);
+
+    for (let r = 0; r < 12; r++) {
+      const s = BLAKE2B_SIGMA[r];
+      g(0, 4, 8,  12, m[s[0]],  m[s[1]]);
+      g(1, 5, 9,  13, m[s[2]],  m[s[3]]);
+      g(2, 6, 10, 14, m[s[4]],  m[s[5]]);
+      g(3, 7, 11, 15, m[s[6]],  m[s[7]]);
+      g(0, 5, 10, 15, m[s[8]],  m[s[9]]);
+      g(1, 6, 11, 12, m[s[10]], m[s[11]]);
+      g(2, 7, 8,  13, m[s[12]], m[s[13]]);
+      g(3, 4, 9,  14, m[s[14]], m[s[15]]);
+    }
+    for (let i = 0; i < 8; i++) h[i] ^= v[i] ^ v[i + 8];
+  }
+
+  const len = inputBytes.length;
+  let offset = 0;
+  while (len - offset > 128) {
+    compress(inputBytes.subarray(offset, offset + 128), offset + 128, false);
+    offset += 128;
+  }
+  const finalBlock = new Uint8Array(128);
+  finalBlock.set(inputBytes.subarray(offset));
+  compress(finalBlock, len, true);
+
+  const fullOut = new Uint8Array(64);
+  const odv = new DataView(fullOut.buffer);
+  for (let i = 0; i < 8; i++) odv.setBigUint64(i * 8, h[i], true);
+  return fullOut.slice(0, outLen);
+}
+
+// ----------------------------------------------------------------------------
+// 4. Bech32 Encoding & Decoding (Cardano addr1, addr_test1, stake1, xpub1)
+// ----------------------------------------------------------------------------
+const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+
+function bech32Polymod(values) {
+  const GEN = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+  let chk = 1;
+  for (const v of values) {
+    const b = chk >>> 25;
+    chk = ((chk & 0x1ffffff) << 5) ^ v;
+    for (let i = 0; i < 5; i++) {
+      if ((b >>> i) & 1) chk ^= GEN[i];
+    }
+  }
+  return chk;
+}
+
+function bech32HrpExpand(hrp) {
+  const res = [];
+  for (let i = 0; i < hrp.length; i++) res.push(hrp.charCodeAt(i) >>> 5);
+  res.push(0);
+  for (let i = 0; i < hrp.length; i++) res.push(hrp.charCodeAt(i) & 31);
+  return res;
+}
+
+function convertBits(data, fromBits, toBits, pad = true) {
+  let acc = 0, bits = 0;
+  const ret = [];
+  const maxv = (1 << toBits) - 1;
+  for (const value of data) {
+    acc = (acc << fromBits) | value;
+    bits += fromBits;
+    while (bits >= toBits) {
+      bits -= toBits;
+      ret.push((acc >>> bits) & maxv);
+    }
+  }
+  if (pad) {
+    if (bits > 0) ret.push((acc << (toBits - bits)) & maxv);
+  } else if (bits >= fromBits || ((acc << (toBits - bits)) & maxv)) {
+    throw new Error('Lỗi chuyển đổi bit Bech32');
+  }
+  return ret;
+}
+
+function bech32Encode(hrp, bytes) {
+  const words = convertBits(bytes, 8, 5, true);
+  const combined = bech32HrpExpand(hrp).concat(words).concat([0, 0, 0, 0, 0, 0]);
+  const mod = bech32Polymod(combined) ^ 1;
+  const checksum = [];
+  for (let p = 0; p < 6; p++) checksum.push((mod >>> (5 * (5 - p))) & 31);
+  return hrp + '1' + words.concat(checksum).map(d => BECH32_CHARSET[d]).join('');
+}
+
+function bech32Decode(str) {
+  const lower = str.trim().toLowerCase();
+  const pos = lower.lastIndexOf('1');
+  if (pos < 1 || pos + 7 > lower.length) throw new Error('Địa chỉ Bech32 không hợp lệ');
+  const hrp = lower.slice(0, pos);
+  const data = [];
+  for (let i = pos + 1; i < lower.length; i++) {
+    const d = BECH32_CHARSET.indexOf(lower[i]);
+    if (d === -1) throw new Error(`Ký tự Bech32 không hợp lệ: ${lower[i]}`);
+    data.push(d);
+  }
+  if (bech32Polymod(bech32HrpExpand(hrp).concat(data)) !== 1) {
+    throw new Error('Checksum địa chỉ Cardano (Bech32) không khớp');
+  }
+  const bytes = new Uint8Array(convertBits(data.slice(0, data.length - 6), 5, 8, false));
+  return { hrp, bytes };
+}
+
+// ----------------------------------------------------------------------------
+// 5. Ed25519 Curve Math + BIP32-Ed25519 V2 (Icarus / Cardano CIP-1852)
+// ----------------------------------------------------------------------------
+const ED_P = (1n << 255n) - 19n;
+const ED_L = (1n << 252n) + 27742317777372353535851937790883648493n;
+
+function mod(a, m = ED_P) {
+  const r = a % m;
+  return r >= 0n ? r : r + m;
+}
+
+function modPow(base, exp, m = ED_P) {
+  let res = 1n;
+  let b = mod(base, m);
+  let e = exp;
+  while (e > 0n) {
+    if (e & 1n) res = (res * b) % m;
+    b = (b * b) % m;
+    e >>= 1n;
+  }
+  return res;
+}
+
+function modInv(a, m = ED_P) {
+  return modPow(a, m - 2n, m);
+}
+
+const ED_D = mod(-121665n * modInv(121666n));
+const ED_I = modPow(2n, (ED_P - 1n) / 4n);
+const ED_BY = mod(4n * modInv(5n));
+const ED_BX = 15112221349535400772501151409588531511454012693041857206046113283949847762202n;
+const BASE_POINT = { X: ED_BX, Y: ED_BY, Z: 1n, T: mod(ED_BX * ED_BY) };
+const ZERO_POINT = { X: 0n, Y: 1n, Z: 1n, T: 0n };
+
+function pointAdd(P, Q) {
+  const A = mod((P.Y - P.X) * (Q.Y - Q.X));
+  const B = mod((P.Y + P.X) * (Q.Y + Q.X));
+  const C = mod(P.T * 2n * ED_D * Q.T);
+  const D = mod(P.Z * 2n * Q.Z);
+  const E = mod(B - A);
+  const F = mod(D - C);
+  const G = mod(D + C);
+  const H = mod(B + A);
+  return {
+    X: mod(E * F),
+    Y: mod(G * H),
+    T: mod(E * H),
+    Z: mod(F * G)
+  };
+}
+
+function scalarMult(scalarBigInt, P = BASE_POINT) {
+  let R = ZERO_POINT;
+  let Q = P;
+  let k = scalarBigInt;
+  while (k > 0n) {
+    if (k & 1n) R = pointAdd(R, Q);
+    Q = pointAdd(Q, Q);
+    k >>= 1n;
+  }
+  return R;
+}
+
+function encodePoint(P) {
+  const zInv = modInv(P.Z);
+  const x = mod(P.X * zInv);
+  const y = mod(P.Y * zInv);
+  const out = bigIntToBytesLE(y, 32);
+  if (x & 1n) out[31] |= 0x80;
+  return out;
+}
+
+function decodePoint(bytes) {
+  if (bytes.length !== 32) throw new Error('PublicKey phải dài 32 bytes');
+  const copy = new Uint8Array(bytes);
+  const sign = (copy[31] >>> 7) & 1;
+  copy[31] &= 0x7f;
+  const y = bytesLEToBigInt(copy);
+  if (y >= ED_P) throw new Error('Điểm Ed25519 ngoài phạm vi trường');
+  const y2 = mod(y * y);
+  const u = mod(y2 - 1n);
+  const v = mod(ED_D * y2 + 1n);
+  let x = mod(u * modInv(v));
+  x = modPow(x, (ED_P + 3n) / 8n);
+  if (mod(v * x * x) !== u) {
+    x = mod(x * ED_I);
+    if (mod(v * x * x) !== u) throw new Error('Điểm Ed25519 không hợp lệ');
+  }
+  if (x === 0n && sign === 1) throw new Error('Điểm Ed25519 dấu X=0 không hợp lệ');
+  if (Number(x & 1n) !== sign) x = ED_P - x;
+  return { X: x, Y: y, Z: 1n, T: mod(x * y) };
+}
+
+function bytesLEToBigInt(bytes) {
+  let res = 0n;
+  for (let i = bytes.length - 1; i >= 0; i--) {
+    res = (res << 8n) | BigInt(bytes[i]);
+  }
+  return res;
+}
+
+function bigIntToBytesLE(num, len = 32) {
+  const out = new Uint8Array(len);
+  let n = num;
+  for (let i = 0; i < len; i++) {
+    out[i] = Number(n & 0xffn);
+    n >>= 8n;
+  }
+  return out;
+}
+
+function publicKeyFromScalarBytes(kLBytes) {
+  const kL = bytesLEToBigInt(kLBytes);
+  return encodePoint(scalarMult(kL, BASE_POINT));
+}
+
+// ----------------------------------------------------------------------------
+// 6. BIP-39
+// ----------------------------------------------------------------------------
+/** Xóa trắng vùng nhớ chứa khóa bí mật (best-effort trong JavaScript). */
+function wipe(...arrays) {
+  for (const a of arrays) if (a && a.fill) a.fill(0);
+}
+
+/**
+ * Tạo 32 byte entropy (24 từ). Nguồn chính là CSPRNG của hệ điều hành;
+ * entropy do người dùng vuốt màn hình chỉ được XOR thêm vào nên không bao giờ
+ * làm yếu nguồn chính.
+ */
+function generateEntropy(extraEntropyBytes = null) {
+  const rnd = new Uint8Array(32);
+  crypto.getRandomValues(rnd);
+  if (rnd.every(b => b === 0)) throw new Error('Bộ sinh số ngẫu nhiên của thiết bị không hoạt động');
+  if (extraEntropyBytes && extraEntropyBytes.length > 0) {
+    const h = sha256(extraEntropyBytes);
+    for (let i = 0; i < 32; i++) rnd[i] ^= h[i];
+  }
+  return rnd;
+}
+
+function entropyToMnemonic(entropyBytes) {
+  const entBits = entropyBytes.length * 8;
+  const csBits = entBits / 32;
+  const hash = sha256(entropyBytes);
+
+  let bits = '';
+  for (const b of entropyBytes) bits += b.toString(2).padStart(8, '0');
+  bits += hash[0].toString(2).padStart(8, '0').slice(0, csBits);
+
+  const words = [];
+  for (let i = 0; i < bits.length; i += 11) {
+    const idx = parseInt(bits.slice(i, i + 11), 2);
+    words.push(BIP39_WORDLIST[idx]);
+  }
+  return words.join(' ');
+}
+
+function mnemonicToEntropy(mnemonic) {
+  const words = mnemonic.trim().toLowerCase().split(/\s+/);
+  if (![12, 15, 18, 21, 24].includes(words.length)) {
+    throw new Error(`Seed phrase phải gồm 12, 15, 18, 21 hoặc 24 từ (hiện có ${words.length} từ)`);
+  }
+  let bits = '';
+  for (const w of words) {
+    const idx = BIP39_WORDLIST.indexOf(w);
+    if (idx === -1) throw new Error(`Từ "${w}" không nằm trong từ điển chuẩn BIP-39`);
+    bits += idx.toString(2).padStart(11, '0');
+  }
+  const dividerIndex = Math.floor(bits.length / 33) * 32;
+  const entBits = bits.slice(0, dividerIndex);
+  const csBits = bits.slice(dividerIndex);
+
+  const entropyBytes = new Uint8Array(entBits.length / 8);
+  for (let i = 0; i < entropyBytes.length; i++) {
+    entropyBytes[i] = parseInt(entBits.slice(i * 8, i * 8 + 8), 2);
+  }
+  const hash = sha256(entropyBytes);
+  const expectedCs = hash[0].toString(2).padStart(8, '0').slice(0, csBits.length);
+  if (csBits !== expectedCs) {
+    throw new Error('Checksum của cụm từ khôi phục (BIP-39) không hợp lệ');
+  }
+  return entropyBytes;
+}
+
+// ----------------------------------------------------------------------------
+// 7. Cardano Icarus Root Key & CIP-1852 Derivation (`m/1852'/1815'/0'`)
+// ----------------------------------------------------------------------------
+function deriveRootXprvFromEntropy(entropyBytes, passphrase = '') {
+  const passBytes = utf8ToBytes(passphrase);
+  const xprv = pbkdf2Sha512(passBytes, entropyBytes, 4096, 96);
+  // Icarus tweakBits on kL (first 32 bytes)
+  xprv[0] &= 0b11111000;
+  xprv[31] &= 0b00011111;
+  xprv[31] |= 0b01000000;
+  return xprv; // 96 bytes: kL (32) || kR (32) || chainCode (32)
+}
+
+function deriveChildXprv(parentXprv96, index) {
+  const kL = parentXprv96.subarray(0, 32);
+  const kR = parentXprv96.subarray(32, 64);
+  const cc = parentXprv96.subarray(64, 96);
+
+  const idxLE = new Uint8Array(4);
+  new DataView(idxLE.buffer).setUint32(0, index >>> 0, true); // V2 uses Little-Endian index
+
+  let Z, C;
+  if ((index >>> 0) >= 0x80000000) {
+    // Hardened child
+    Z = hmacSha512(cc, concatBytes(new Uint8Array([0x00]), kL, kR, idxLE));
+    C = hmacSha512(cc, concatBytes(new Uint8Array([0x01]), kL, kR, idxLE));
+  } else {
+    // Normal child
+    const A = publicKeyFromScalarBytes(kL);
+    Z = hmacSha512(cc, concatBytes(new Uint8Array([0x02]), A, idxLE));
+    C = hmacSha512(cc, concatBytes(new Uint8Array([0x03]), A, idxLE));
+  }
+
+  // V2 scheme: zL is first 28 bytes of Z, multiplied by 8, added to kL
+  const zL28 = bytesLEToBigInt(Z.subarray(0, 28));
+  const kLBig = bytesLEToBigInt(kL);
+  const childKL = bigIntToBytesLE(kLBig + 8n * zL28, 32);
+
+  // zR is right 32 bytes of Z, added to kR modulo 2^256
+  const zR32 = bytesLEToBigInt(Z.subarray(32, 64));
+  const kRBig = bytesLEToBigInt(kR);
+  const childKR = bigIntToBytesLE((kRBig + zR32) & ((1n << 256n) - 1n), 32);
+
+  const childCC = C.subarray(32, 64);
+  return concatBytes(childKL, childKR, childCC);
+}
+
+function xprvToXpub(xprv96) {
+  const kL = xprv96.subarray(0, 32);
+  const cc = xprv96.subarray(64, 96);
+  const A = publicKeyFromScalarBytes(kL);
+  return concatBytes(A, cc); // 64 bytes: pubKey (32) || chainCode (32)
+}
+
+function deriveChildXpub(parentXpub64, index) {
+  if ((index >>> 0) >= 0x80000000) {
+    throw new Error('Không thể dẫn xuất Hardened path từ Public Key (xpub)');
+  }
+  const A = parentXpub64.subarray(0, 32);
+  const cc = parentXpub64.subarray(32, 64);
+
+  const idxLE = new Uint8Array(4);
+  new DataView(idxLE.buffer).setUint32(0, index >>> 0, true);
+
+  const Z = hmacSha512(cc, concatBytes(new Uint8Array([0x02]), A, idxLE));
+  const C = hmacSha512(cc, concatBytes(new Uint8Array([0x03]), A, idxLE));
+
+  const zL28 = bytesLEToBigInt(Z.subarray(0, 28));
+  const offsetPoint = scalarMult(8n * zL28, BASE_POINT);
+  const parentPoint = decodePoint(A);
+  const childPoint = pointAdd(parentPoint, offsetPoint);
+  const childA = encodePoint(childPoint);
+  const childCC = C.subarray(32, 64);
+  return concatBytes(childA, childCC);
+}
+
+const HARDENED = 0x80000000;
+
+function buildAddressesFromPubKeys(paymentPubKey32, stakePubKey32, isMainnet = true) {
+  const paymentHash = blake2b(paymentPubKey32, 28);
+  const stakeHash = blake2b(stakePubKey32, 28);
+
+  // Shelley Base Address: header (0x01 mainnet, 0x00 testnet) || paymentHash(28) || stakeHash(28)
+  const baseHeader = isMainnet ? 0x01 : 0x00;
+  const baseBytes = concatBytes(new Uint8Array([baseHeader]), paymentHash, stakeHash);
+  const baseAddress = bech32Encode(isMainnet ? 'addr' : 'addr_test', baseBytes);
+
+  // Enterprise Address (no stake): header (0x61 mainnet, 0x60 testnet) || paymentHash(28)
+  const entHeader = isMainnet ? 0x61 : 0x60;
+  const entBytes = concatBytes(new Uint8Array([entHeader]), paymentHash);
+  const enterpriseAddress = bech32Encode(isMainnet ? 'addr' : 'addr_test', entBytes);
+
+  // Reward / Stake Address: header (0xe1 mainnet, 0xe0 testnet) || stakeHash(28)
+  const stakeHeader = isMainnet ? 0xe1 : 0xe0;
+  const stakeBytes = concatBytes(new Uint8Array([stakeHeader]), stakeHash);
+  const stakeAddress = bech32Encode(isMainnet ? 'stake' : 'stake_test', stakeBytes);
+
+  return {
+    paymentKeyHashHex: bytesToHex(paymentHash),
+    stakeKeyHashHex: bytesToHex(stakeHash),
+    baseAddress,
+    enterpriseAddress,
+    stakeAddress
+  };
+}
+
+// ----------------------------------------------------------------------------
+// 8. Ed25519 Extended Signing & Verification (Cardano VKeyWitness)
+// ----------------------------------------------------------------------------
+function signExtendedEd25519(xprv96Bytes, messageBytes) {
+  const kL = xprv96Bytes.subarray(0, 32);
+  const kR = xprv96Bytes.subarray(32, 64);
+  const A = publicKeyFromScalarBytes(kL);
+
+  const rHash = sha512(concatBytes(kR, messageBytes));
+  const r = mod(bytesLEToBigInt(rHash), ED_L);
+  const R = encodePoint(scalarMult(r, BASE_POINT));
+
+  const kHash = sha512(concatBytes(R, A, messageBytes));
+  const k = mod(bytesLEToBigInt(kHash), ED_L);
+  const s = mod(r + k * bytesLEToBigInt(kL), ED_L);
+  const S = bigIntToBytesLE(s, 32);
+
+  return {
+    publicKey: A,
+    signature: concatBytes(R, S) // 64 bytes
+  };
+}
+
+function verifyEd25519(pubKey32, messageBytes, sig64) {
+  try {
+    if (sig64.length !== 64 || pubKey32.length !== 32) return false;
+    const RBytes = sig64.subarray(0, 32);
+    const SBytes = sig64.subarray(32, 64);
+    const s = bytesLEToBigInt(SBytes);
+    if (s >= ED_L) return false;
+
+    const R = decodePoint(RBytes);
+    const A = decodePoint(pubKey32);
+    const kHash = sha512(concatBytes(RBytes, pubKey32, messageBytes));
+    const k = mod(bytesLEToBigInt(kHash), ED_L);
+
+    // Check 8*S*B == 8*R + 8*k*A
+    const lhs = encodePoint(scalarMult(8n * s, BASE_POINT));
+    const rhsPoint = pointAdd(scalarMult(8n, R), scalarMult(8n * k, A));
+    const rhs = encodePoint(rhsPoint);
+    return bytesToHex(lhs) === bytesToHex(rhs);
+  } catch {
+    return false;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 9. Minimal CBOR Encoder / Decoder for Cardano Transactions (RFC 7049)
+// ----------------------------------------------------------------------------
+function cborHead(major, val) {
+  const n = BigInt(val);
+  const m = major << 5;
+  if (n < 24n) return new Uint8Array([m | Number(n)]);
+  if (n <= 0xffn) return new Uint8Array([m | 24, Number(n)]);
+  if (n <= 0xffffn) {
+    const b = new Uint8Array(3);
+    b[0] = m | 25;
+    new DataView(b.buffer).setUint16(1, Number(n), false);
+    return b;
+  }
+  if (n <= 0xffffffffn) {
+    const b = new Uint8Array(5);
+    b[0] = m | 26;
+    new DataView(b.buffer).setUint32(1, Number(n), false);
+    return b;
+  }
+  const b = new Uint8Array(9);
+  b[0] = m | 27;
+  new DataView(b.buffer).setBigUint64(1, n, false);
+  return b;
+}
+
+function encodeCbor(val) {
+  if (typeof val === 'number' || typeof val === 'bigint') {
+    const n = BigInt(val);
+    if (n >= 0n) return cborHead(0, n);
+    return cborHead(1, -1n - n);
+  }
+  if (val instanceof Uint8Array) {
+    return concatBytes(cborHead(2, val.length), val);
+  }
+  if (typeof val === 'string') {
+    const utf8 = utf8ToBytes(val);
+    return concatBytes(cborHead(3, utf8.length), utf8);
+  }
+  if (Array.isArray(val)) {
+    return concatBytes(cborHead(4, val.length), ...val.map(encodeCbor));
+  }
+  if (val instanceof Map) {
+    const parts = [cborHead(5, val.size)];
+    for (const [k, v] of val.entries()) {
+      parts.push(encodeCbor(k), encodeCbor(v));
+    }
+    return concatBytes(...parts);
+  }
+  if (val === null) return new Uint8Array([0xf6]);
+  if (val === true) return new Uint8Array([0xf5]);
+  if (val === false) return new Uint8Array([0xf4]);
+  throw new Error('Kiểu dữ liệu CBOR không được hỗ trợ');
+}
+
+// ----------------------------------------------------------------------------
+// 10. Base64 (dùng cho gói QR và file sao lưu)
+// ----------------------------------------------------------------------------
+function bytesToB64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function b64ToBytes(b64) {
+  if (typeof b64 !== 'string' || !/^[A-Za-z0-9_-]*$/.test(b64)) throw new Error('Dữ liệu Base64 không hợp lệ');
+  const std = b64.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(std + '='.repeat((4 - (std.length % 4)) % 4));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function bytesEqual(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a[i] ^ b[i];
+  return d === 0;
+}
+
+// ----------------------------------------------------------------------------
+// 11. Dẫn xuất ví (chỉ mainnet, tài khoản 0)
+// ----------------------------------------------------------------------------
+function subtleOrThrow() {
+  const s = globalThis.crypto && globalThis.crypto.subtle;
+  if (!s) throw new Error('Thiết bị không hỗ trợ WebCrypto. Ứng dụng từ chối chạy để không dùng mã hóa yếu.');
+  return s;
+}
+
+/** Khóa gốc Icarus: PBKDF2-HMAC-SHA512(pass="", salt=entropy, 4096, 96) bằng WebCrypto gốc. */
+async function deriveRootXprv(entropyBytes) {
+  const subtle = subtleOrThrow();
+  const key = await subtle.importKey('raw', new Uint8Array(0), 'PBKDF2', false, ['deriveBits']).catch(() => null);
+  let xprv;
+  if (key) {
+    const bits = await subtle.deriveBits(
+      { name: 'PBKDF2', hash: 'SHA-512', salt: entropyBytes, iterations: 4096 }, key, 768);
+    xprv = new Uint8Array(bits);
+  } else {
+    // Một số trình duyệt không cho nhập khóa rỗng: dùng bản thuần JS (đã đối chiếu, chỉ chậm hơn).
+    xprv = pbkdf2Sha512(new Uint8Array(0), entropyBytes, 4096, 96);
+  }
+  xprv[0] &= 0b11111000;
+  xprv[31] &= 0b00011111;
+  xprv[31] |= 0b01000000;
+  return xprv;
+}
+
+/** m/1852'/1815'/0' — trả về khóa tài khoản (96 byte) và xpub (64 byte). */
+async function deriveAccountFromEntropy(entropyBytes) {
+  const root = await deriveRootXprv(entropyBytes);
+  const purpose = deriveChildXprv(root, 1852 + HARDENED);
+  const coin = deriveChildXprv(purpose, 1815 + HARDENED);
+  const accountXprv = deriveChildXprv(coin, 0 + HARDENED);
+  wipe(root, purpose, coin);
+  return { accountXprv, accountXpub: xprvToXpub(accountXprv) };
+}
+
+/** Khóa ký: thanh toán m/…/0/0 và stake m/…/2/0. Người gọi phải wipe() sau khi dùng. */
+function deriveSigningKeys(accountXprv) {
+  const ext = deriveChildXprv(accountXprv, 0);
+  const payXprv = deriveChildXprv(ext, 0);
+  const stk = deriveChildXprv(accountXprv, 2);
+  const stakeXprv = deriveChildXprv(stk, 0);
+  wipe(ext, stk);
+  return { payXprv, stakeXprv };
+}
+
+/** Thông tin công khai của ví từ xpub tài khoản (dùng ở cả ví lạnh và ví nóng). */
+function walletFromXpub(accountXpub) {
+  if (!(accountXpub instanceof Uint8Array) || accountXpub.length !== 64) {
+    throw new Error('Khóa công khai tài khoản (xpub) phải dài đúng 64 byte');
+  }
+  const payPub = deriveChildXpub(deriveChildXpub(accountXpub, 0), 0).subarray(0, 32);
+  const stakePub = deriveChildXpub(deriveChildXpub(accountXpub, 2), 0).subarray(0, 32);
+  const a = buildAddressesFromPubKeys(payPub, stakePub, true);
+  return {
+    accountXpub,
+    payPub: new Uint8Array(payPub),
+    stakePub: new Uint8Array(stakePub),
+    payHash: hexToBytes(a.paymentKeyHashHex),
+    stakeHash: hexToBytes(a.stakeKeyHashHex),
+    baseAddress: a.baseAddress,
+    stakeAddress: a.stakeAddress,
+    baseAddressBytes: bech32Decode(a.baseAddress).bytes,
+    rewardAccountBytes: bech32Decode(a.stakeAddress).bytes
+  };
+}
+
+// ----------------------------------------------------------------------------
+// 12. Kho khóa: PBKDF2-HMAC-SHA512 (600.000 vòng) + AES-256-GCM (WebCrypto gốc)
+// ----------------------------------------------------------------------------
+const VAULT_KDF_ITERATIONS = 600000;
+const VAULT_MIN_ITER = 200000;
+const VAULT_MAX_ITER = 5000000;
+
+async function vaultKey(password, salt, iterations) {
+  const subtle = subtleOrThrow();
+  const base = await subtle.importKey('raw', utf8ToBytes(password.normalize('NFKC')), 'PBKDF2', false, ['deriveKey']);
+  return subtle.deriveKey(
+    { name: 'PBKDF2', hash: 'SHA-512', salt, iterations },
+    base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+
+/** Mã hóa `plainBytes`. `label` được xác thực kèm (AAD) nên không thể tráo loại file. */
+async function sealVault(plainBytes, password, label) {
+  const subtle = subtleOrThrow();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await vaultKey(password, salt, VAULT_KDF_ITERATIONS);
+  const ct = new Uint8Array(await subtle.encrypt(
+    { name: 'AES-GCM', iv, additionalData: utf8ToBytes(label) }, key, plainBytes));
+  return {
+    v: 1, kdf: 'PBKDF2-SHA512', iter: VAULT_KDF_ITERATIONS, cipher: 'AES-256-GCM', label,
+    salt: bytesToB64(salt), iv: bytesToB64(iv), ct: bytesToB64(ct)
+  };
+}
+
+async function openVault(box, password) {
+  const subtle = subtleOrThrow();
+  if (!box || box.v !== 1 || box.kdf !== 'PBKDF2-SHA512' || box.cipher !== 'AES-256-GCM' ||
+      !Number.isInteger(box.iter) || box.iter < VAULT_MIN_ITER || box.iter > VAULT_MAX_ITER ||
+      typeof box.label !== 'string') {
+    throw new Error('Định dạng kho khóa không hợp lệ hoặc đã bị chỉnh sửa');
+  }
+  const salt = b64ToBytes(box.salt), iv = b64ToBytes(box.iv), ct = b64ToBytes(box.ct);
+  if (salt.length !== 16 || iv.length !== 12 || ct.length < 16) throw new Error('Định dạng kho khóa không hợp lệ');
+  const key = await vaultKey(password, salt, box.iter);
+  try {
+    return new Uint8Array(await subtle.decrypt(
+      { name: 'AES-GCM', iv, additionalData: utf8ToBytes(box.label) }, key, ct));
+  } catch {
+    throw new Error('Mật khẩu không đúng (hoặc dữ liệu đã bị thay đổi)');
+  }
+}
+
+// ---- core/tx.js ----
+// ============================================================================
+// core/tx.js — Giao dịch Cardano cho ví air-gap
+//
+// Nguyên tắc bảo mật quan trọng nhất của file này:
+//   Ví lạnh KHÔNG tin bất kỳ mô tả nào do ví nóng gửi sang. Nó tự giải mã đúng
+//   các byte sẽ được ký (analyzeTxBody) và chỉ hiển thị những gì nằm trong đó.
+//   Mọi trường lạ trong giao dịch đều bị từ chối.
+// ============================================================================
+
+
+
+const NIGHT = {
+  // Nguồn: cardanoscan.io/token/0691b2fe…4e49474854
+  policyHex: '0691b2fecca1ac4f53cb6dfb00b7013e561d1f34403b957cbb5af1fa',
+  nameHex: '4e49474854',
+  decimals: 6
+};
+const NIGHT_KEY = `${NIGHT.policyHex}.${NIGHT.nameHex}`;
+
+const KNOWN_POOLS = [
+  { ticker: 'FIMI', name: 'Tài Chính - Tâm An', id: 'pool1rct5guwnp6nk9f4ldn5tr3s42j0nm5rxeayv56lxua5ck47ex39' },
+  { ticker: 'FIDA', name: 'The pool of Vietnamese', id: 'pool1jj2hvts3ryffy5txm7w0am3zt7s7sehdf8rrwfesjmr7shv0mgl' }
+];
+const KNOWN_DREPS = [
+  { name: 'FIMI', id: 'drep1ygeqtuysjy9s3mw3ej7essghq9rk3cnl08fehntu4jw3rtqfw96dg' }
+];
+
+const DEFAULT_PARAMS = { minFeeA: 44n, minFeeB: 155381n, coinsPerUtxoByte: 4310n, keyDeposit: 2000000n };
+const MAX_FEE = 5000000n;          // Ví lạnh từ chối ký nếu phí > 5 ADA
+const MAX_INPUTS = 80;
+const MAX_TX_BYTES = 16000;
+
+// ----------------------------------------------------------------------------
+// Số tiền: chỉ dùng BigInt, không dùng số thực
+// ----------------------------------------------------------------------------
+function parseUnits(text, decimals = 6) {
+  const s = String(text).trim().replace(/\s/g, '');
+  if (!/^\d{1,15}([.,]\d+)?$/.test(s)) throw new Error('Số tiền không hợp lệ');
+  const [whole, frac = ''] = s.split(/[.,]/);
+  if (frac.length > decimals) throw new Error(`Tối đa ${decimals} chữ số thập phân`);
+  return BigInt(whole) * 10n ** BigInt(decimals) + BigInt(frac.padEnd(decimals, '0') || '0');
+}
+
+function formatUnits(value, decimals = 6) {
+  const v = BigInt(value);
+  const neg = v < 0n;
+  const abs = neg ? -v : v;
+  const base = 10n ** BigInt(decimals);
+  const whole = (abs / base).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  let frac = (abs % base).toString().padStart(decimals, '0').replace(/0+$/, '');
+  if (frac.length < 2) frac = frac.padEnd(2, '0');
+  return `${neg ? '-' : ''}${whole},${frac}`;
+}
+
+// ----------------------------------------------------------------------------
+// CBOR: bộ giải mã nghiêm ngặt (chỉ dạng độ dài xác định, số nguyên tối giản,
+// không tag, không số thực, không khóa trùng)
+// ----------------------------------------------------------------------------
+function decodeCbor(bytes) {
+  let pos = 0;
+  const need = n => { if (pos + n > bytes.length) throw new Error('CBOR bị cắt cụt'); };
+  function head() {
+    need(1);
+    const ib = bytes[pos++];
+    const major = ib >> 5, info = ib & 31;
+    let val;
+    if (info < 24) val = BigInt(info);
+    else if (info === 24) { need(1); val = BigInt(bytes[pos++]); if (val < 24n) throw new Error('CBOR không tối giản'); }
+    else if (info === 25) { need(2); val = BigInt((bytes[pos] << 8) | bytes[pos + 1]); pos += 2; if (val < 256n) throw new Error('CBOR không tối giản'); }
+    else if (info === 26) { need(4); val = BigInt(new DataView(bytes.buffer, bytes.byteOffset + pos, 4).getUint32(0)); pos += 4; if (val < 65536n) throw new Error('CBOR không tối giản'); }
+    else if (info === 27) { need(8); val = new DataView(bytes.buffer, bytes.byteOffset + pos, 8).getBigUint64(0); pos += 8; if (val < 4294967296n) throw new Error('CBOR không tối giản'); }
+    else throw new Error('CBOR dạng độ dài không xác định không được chấp nhận');
+    return { major, info, val };
+  }
+  function item(depth) {
+    if (depth > 12) throw new Error('CBOR lồng quá sâu');
+    const { major, info, val } = head();
+    switch (major) {
+      case 0: return val;
+      case 1: return -1n - val;
+      case 2: { const n = Number(val); need(n); const b = bytes.slice(pos, pos + n); pos += n; return b; }
+      case 3: { const n = Number(val); need(n); const s = bytesToUtf8(bytes.subarray(pos, pos + n)); pos += n; return s; }
+      case 4: { const n = Number(val); if (n > 4096) throw new Error('Mảng CBOR quá lớn'); const a = []; for (let i = 0; i < n; i++) a.push(item(depth + 1)); return a; }
+      case 5: {
+        const n = Number(val); if (n > 4096) throw new Error('Map CBOR quá lớn');
+        const m = new Map(); const seen = new Set();
+        for (let i = 0; i < n; i++) {
+          const kStart = pos; const k = item(depth + 1);
+          const kHex = bytesToHex(bytes.subarray(kStart, pos));
+          if (seen.has(kHex)) throw new Error('Map CBOR có khóa trùng');
+          seen.add(kHex);
+          m.set(k, item(depth + 1));
+        }
+        return m;
+      }
+      case 6: throw new Error('CBOR tag không được chấp nhận');
+      default:
+        if (info === 20) return false;
+        if (info === 21) return true;
+        if (info === 22) return null;
+        throw new Error('Kiểu CBOR không được chấp nhận');
+    }
+  }
+  const v = item(0);
+  if (pos !== bytes.length) throw new Error('CBOR có dữ liệu thừa');
+  return v;
+}
+
+// ----------------------------------------------------------------------------
+// Địa chỉ, pool, DRep
+// ----------------------------------------------------------------------------
+/** Kiểm tra byte địa chỉ Shelley mainnet; trả về loại địa chỉ. */
+function checkAddressBytes(b) {
+  if (!(b instanceof Uint8Array) || b.length < 29) throw new Error('Địa chỉ không hợp lệ');
+  const type = b[0] >> 4, net = b[0] & 15;
+  if (type > 7) throw new Error('Loại địa chỉ không được hỗ trợ (Byron/stake)');
+  if (net !== 1) throw new Error('Địa chỉ không thuộc mạng chính (mainnet)');
+  if (type <= 3 && b.length !== 57) throw new Error('Độ dài địa chỉ không hợp lệ');
+  if ((type === 6 || type === 7) && b.length !== 29) throw new Error('Độ dài địa chỉ không hợp lệ');
+  if (type === 4 || type === 5) throw new Error('Địa chỉ dạng pointer không được hỗ trợ');
+  return type;
+}
+
+function parseAddress(text) {
+  const s = String(text).trim();
+  if (!/^addr1[0-9a-z]+$/.test(s.toLowerCase())) throw new Error('Địa chỉ phải bắt đầu bằng addr1');
+  const { hrp, bytes } = bech32Decode(s);
+  if (hrp !== 'addr') throw new Error('Địa chỉ phải bắt đầu bằng addr1');
+  checkAddressBytes(bytes);
+  return bytes;
+}
+
+const addressToText = bytes => bech32Encode('addr', bytes);
+
+function parsePoolId(text) {
+  const s = String(text).trim().toLowerCase();
+  let h;
+  if (s.startsWith('pool1')) { const d = bech32Decode(s); if (d.hrp !== 'pool') throw new Error('Mã pool không hợp lệ'); h = d.bytes; }
+  else if (/^[0-9a-f]{56}$/.test(s)) h = hexToBytes(s);
+  else throw new Error('Mã pool phải bắt đầu bằng pool1 hoặc là 56 ký tự hex');
+  if (h.length !== 28) throw new Error('Mã pool không hợp lệ');
+  return h;
+}
+const poolToText = hash => bech32Encode('pool', hash);
+
+/** Trả về cấu trúc DRep của Conway: [0,hash] khóa, [1,hash] script, [2] trắng, [3] bất tín nhiệm. */
+function parseDrep(text) {
+  const s = String(text).trim().toLowerCase();
+  if (s === 'abstain') return [2n];
+  if (s === 'no_confidence') return [3n];
+  if (!s.startsWith('drep1') && !s.startsWith('drep_script1')) throw new Error('Mã DRep phải bắt đầu bằng drep1');
+  const { hrp, bytes } = bech32Decode(s);
+  if (hrp === 'drep' && bytes.length === 29) {           // CIP-129
+    if (bytes[0] === 0x22) return [0n, bytes.slice(1)];
+    if (bytes[0] === 0x23) return [1n, bytes.slice(1)];
+    throw new Error('Mã DRep không hợp lệ');
+  }
+  if (bytes.length === 28 && hrp === 'drep') return [0n, bytes];          // CIP-105
+  if (bytes.length === 28 && hrp === 'drep_script') return [1n, bytes];
+  throw new Error('Mã DRep không hợp lệ');
+}
+
+function drepToText(d) {
+  if (!Array.isArray(d) || d.length < 1) throw new Error('DRep không hợp lệ');
+  const t = d[0];
+  if (t === 2n && d.length === 1) return 'Luôn bỏ phiếu trắng';
+  if (t === 3n && d.length === 1) return 'Luôn bất tín nhiệm';
+  if ((t === 0n || t === 1n) && d.length === 2 && d[1] instanceof Uint8Array && d[1].length === 28) {
+    return bech32Encode('drep', concatBytes(new Uint8Array([t === 0n ? 0x22 : 0x23]), d[1]));
+  }
+  throw new Error('DRep không hợp lệ');
+}
+
+function knownPoolName(poolText) {
+  const k = KNOWN_POOLS.find(p => p.id === poolText);
+  return k ? `${k.ticker} — ${k.name}` : null;
+}
+function knownDrepName(drepText) {
+  const k = KNOWN_DREPS.find(p => p.id === drepText);
+  return k ? `DRep ${k.name}` : null;
+}
+
+// ----------------------------------------------------------------------------
+// VÍ LẠNH: giải mã và kiểm tra đúng các byte sẽ ký
+// ----------------------------------------------------------------------------
+const isUint = v => typeof v === 'bigint' && v >= 0n;
+const isHash = (v, n) => v instanceof Uint8Array && v.length === n;
+
+function readValue(v) {
+  if (isUint(v)) return { lovelace: v, assets: [] };
+  if (!Array.isArray(v) || v.length !== 2 || !isUint(v[0]) || !(v[1] instanceof Map)) throw new Error('Giá trị đầu ra không hợp lệ');
+  const assets = [];
+  for (const [policy, names] of v[1]) {
+    if (!isHash(policy, 28) || !(names instanceof Map) || names.size === 0) throw new Error('Token trong đầu ra không hợp lệ');
+    for (const [name, qty] of names) {
+      if (!(name instanceof Uint8Array) || name.length > 32 || !isUint(qty) || qty === 0n) throw new Error('Token trong đầu ra không hợp lệ');
+      assets.push({ key: `${bytesToHex(policy)}.${bytesToHex(name)}`, qty });
+    }
+  }
+  return { lovelace: v[0], assets };
+}
+
+/**
+ * @param bodyBytes  CBOR của transaction body (đúng các byte sẽ được băm và ký)
+ * @param wallet     kết quả walletFromXpub() của CHÍNH ví lạnh
+ * @returns bản tóm tắt đã kiểm chứng; ném lỗi nếu có bất kỳ điều gì ví không hiểu
+ */
+function analyzeTxBody(bodyBytes, wallet) {
+  if (bodyBytes.length > MAX_TX_BYTES) throw new Error('Giao dịch quá lớn');
+  const body = decodeCbor(bodyBytes);
+  if (!(body instanceof Map)) throw new Error('Giao dịch không hợp lệ');
+  if (!bytesEqual(encodeCbor(body), bodyBytes)) throw new Error('Giao dịch không ở dạng chuẩn tắc — từ chối');
+
+  const allowed = new Set([0n, 1n, 2n, 3n, 4n, 5n]);
+  for (const k of body.keys()) {
+    if (!allowed.has(k)) throw new Error(`Giao dịch chứa trường không được hỗ trợ (#${k}) — từ chối ký`);
+  }
+  for (const k of [0n, 1n, 2n, 3n]) if (!body.has(k)) throw new Error('Giao dịch thiếu trường bắt buộc');
+
+  const inputs = body.get(0n);
+  if (!Array.isArray(inputs) || inputs.length === 0 || inputs.length > MAX_INPUTS) throw new Error('Danh sách đầu vào không hợp lệ');
+  for (const i of inputs) {
+    if (!Array.isArray(i) || i.length !== 2 || !isHash(i[0], 32) || !isUint(i[1])) throw new Error('Đầu vào không hợp lệ');
+  }
+
+  const outs = body.get(1n);
+  if (!Array.isArray(outs) || outs.length === 0 || outs.length > 20) throw new Error('Danh sách đầu ra không hợp lệ');
+  const outputs = outs.map(o => {
+    if (!Array.isArray(o) || o.length !== 2) throw new Error('Đầu ra không hợp lệ (có datum/script) — từ chối ký');
+    checkAddressBytes(o[0]);
+    const { lovelace, assets } = readValue(o[1]);
+    return { address: addressToText(o[0]), isOwn: bytesEqual(o[0], wallet.baseAddressBytes), lovelace, assets };
+  });
+
+  const fee = body.get(2n);
+  if (!isUint(fee)) throw new Error('Phí không hợp lệ');
+  if (fee > MAX_FEE) throw new Error(`Phí ${formatUnits(fee)} ADA cao bất thường — từ chối ký`);
+  const ttl = body.get(3n);
+  if (!isUint(ttl)) throw new Error('Thời hạn giao dịch không hợp lệ');
+
+  const ownCred = c => Array.isArray(c) && c.length === 2 && c[0] === 0n && bytesEqual(c[1], wallet.stakeHash);
+  const certs = [];
+  let deposit = 0n;
+  if (body.has(4n)) {
+    const list = body.get(4n);
+    if (!Array.isArray(list) || list.length === 0 || list.length > 3) throw new Error('Chứng chỉ không hợp lệ');
+    for (const c of list) {
+      if (!Array.isArray(c) || !isUint(c[0]) || !ownCred(c[1])) throw new Error('Chứng chỉ không thuộc khóa stake của ví này — từ chối ký');
+      const t = Number(c[0]);
+      const shape = { 2: 'P', 9: 'D', 10: 'PD', 7: 'C', 11: 'PC', 12: 'DC', 13: 'PDC' }[t];
+      if (!shape || c.length !== 2 + shape.length) throw new Error(`Loại chứng chỉ #${t} không được hỗ trợ — từ chối ký`);
+      const cert = { pool: null, drep: null, deposit: 0n };
+      [...shape].forEach((kind, idx) => {
+        const v = c[2 + idx];
+        if (kind === 'P') { if (!isHash(v, 28)) throw new Error('Mã pool không hợp lệ'); cert.pool = poolToText(v); }
+        if (kind === 'D') cert.drep = drepToText(v);
+        if (kind === 'C') { if (!isUint(v) || v > 10000000n) throw new Error('Tiền cọc không hợp lệ'); cert.deposit = v; }
+      });
+      deposit += cert.deposit;
+      certs.push(cert);
+    }
+  }
+
+  let withdrawal = 0n;
+  if (body.has(5n)) {
+    const w = body.get(5n);
+    if (!(w instanceof Map) || w.size !== 1) throw new Error('Lệnh rút thưởng không hợp lệ');
+    for (const [acct, amt] of w) {
+      if (!bytesEqual(acct, wallet.rewardAccountBytes) || !isUint(amt)) throw new Error('Lệnh rút thưởng không thuộc ví này — từ chối ký');
+      withdrawal += amt;
+    }
+  }
+
+  const sum = list => {
+    const t = { lovelace: 0n, assets: new Map() };
+    for (const o of list) {
+      t.lovelace += o.lovelace;
+      for (const a of o.assets) t.assets.set(a.key, (t.assets.get(a.key) || 0n) + a.qty);
+    }
+    return t;
+  };
+  const external = outputs.filter(o => !o.isOwn);
+  const own = outputs.filter(o => o.isOwn);
+  const kind = certs.length ? 'delegation' : withdrawal > 0n && external.length === 0 ? 'withdraw' : 'payment';
+
+  return {
+    kind,
+    hash: blake2b(bodyBytes, 32),
+    inputCount: inputs.length,
+    external, own,
+    sent: sum(external),
+    change: sum(own),
+    fee, ttl: Number(ttl), certs, deposit, withdrawal,
+    needsStakeKey: certs.length > 0 || body.has(5n)
+  };
+}
+
+// ----------------------------------------------------------------------------
+// VÍ NÓNG: dựng giao dịch chưa ký
+// ----------------------------------------------------------------------------
+function assetsToCbor(assetMap) {
+  const byPolicy = new Map();
+  for (const [key, qty] of assetMap) {
+    if (qty <= 0n) continue;
+    const [p, n] = key.split('.');
+    if (!byPolicy.has(p)) byPolicy.set(p, []);
+    byPolicy.get(p).push([n, qty]);
+  }
+  const out = new Map();
+  for (const p of [...byPolicy.keys()].sort()) {
+    const names = byPolicy.get(p).sort((a, b) => a[0].length - b[0].length || (a[0] < b[0] ? -1 : 1));
+    out.set(hexToBytes(p), new Map(names.map(([n, q]) => [hexToBytes(n), q])));
+  }
+  return out;
+}
+
+function outputCbor(addressBytes, lovelace, assetMap) {
+  const ma = assetsToCbor(assetMap || new Map());
+  return [addressBytes, ma.size ? [lovelace, ma] : lovelace];
+}
+
+const minUtxo = (out, params) => params.coinsPerUtxoByte * BigInt(160 + encodeCbor(out).length);
+
+/**
+ * @param o.wallet       walletFromXpub()
+ * @param o.utxos        [{ txHash, index, lovelace: BigInt, assets: Map<"policy.name", BigInt> }]
+ * @param o.params       tham số giao thức (DEFAULT_PARAMS nếu không lấy được)
+ * @param o.ttl          slot hết hạn
+ * @param o.payment      { addressBytes, lovelace: BigInt, assets: Map } | null
+ * @param o.certs        mảng chứng chỉ CBOR (đã dựng bằng delegationCert)
+ * @param o.deposit      tổng tiền cọc
+ * @param o.withdrawal   số thưởng rút (BigInt)
+ */
+function buildUnsignedTx(o) {
+  const params = o.params || DEFAULT_PARAMS;
+  const certs = o.certs || [];
+  const deposit = o.deposit || 0n;
+  const withdrawal = o.withdrawal || 0n;
+  const witnessCount = certs.length || withdrawal > 0n ? 2 : 1;
+  if (!Number.isInteger(o.ttl) || o.ttl <= 0) throw new Error('Thiếu thời hạn giao dịch (TTL)');
+
+  let payOut = null;
+  const needAssets = new Map();
+  if (o.payment) {
+    for (const [k, q] of o.payment.assets || []) if (q > 0n) needAssets.set(k, q);
+    let lov = o.payment.sendAll ? 2000000n : o.payment.lovelace;
+    const floor = minUtxo(outputCbor(o.payment.addressBytes, 2000000n, needAssets), params);
+    if (lov === 0n && needAssets.size) lov = floor;
+    if (lov < floor) throw new Error(`Số ADA gửi tối thiểu cho đầu ra này là ${formatUnits(floor)} ADA`);
+    payOut = { addressBytes: o.payment.addressBytes, lovelace: lov, assets: needAssets };
+  }
+  const outLovelace = () => (payOut ? payOut.lovelace : 0n) + deposit;
+
+  const pool = [...o.utxos].sort((a, b) => (a.lovelace > b.lovelace ? -1 : a.lovelace < b.lovelace ? 1 : 0));
+  const selected = [];
+  const take = u => { selected.push(u); pool.splice(pool.indexOf(u), 1); };
+  for (const [k, q] of needAssets) {
+    let have = selected.reduce((s, u) => s + (u.assets.get(k) || 0n), 0n);
+    for (const u of [...pool]) {
+      if (have >= q) break;
+      if ((u.assets.get(k) || 0n) > 0n) { take(u); have += u.assets.get(k); }
+    }
+    if (have < q) throw new Error('Số dư token không đủ');
+  }
+
+  const assemble = fee => {
+    const inLov = selected.reduce((s, u) => s + u.lovelace, 0n) + withdrawal;
+    const left = new Map();
+    for (const u of selected) for (const [k, q] of u.assets) left.set(k, (left.get(k) || 0n) + q);
+    for (const [k, q] of needAssets) left.set(k, left.get(k) - q);
+    for (const [k, q] of [...left]) if (q === 0n) left.delete(k);
+    const changeLov = inLov - outLovelace() - fee;
+    const outputs = [];
+    if (payOut) outputs.push(outputCbor(payOut.addressBytes, payOut.lovelace, payOut.assets));
+    const changeOut = outputCbor(o.wallet.baseAddressBytes, changeLov > 0n ? changeLov : 2000000n, left);
+    const changeMin = minUtxo(changeOut, params);
+    const inputs = [...selected]
+      .sort((a, b) => (a.txHash < b.txHash ? -1 : a.txHash > b.txHash ? 1 : a.index - b.index))
+      .map(u => [hexToBytes(u.txHash), BigInt(u.index)]);
+    return { inputs, outputs, changeOut, changeLov, changeMin, hasLeftAssets: left.size > 0 };
+  };
+  const bodyOf = (a, fee, withChange) => {
+    const m = new Map([[0n, a.inputs], [1n, withChange ? [...a.outputs, a.changeOut] : a.outputs], [2n, fee], [3n, BigInt(o.ttl)]]);
+    if (certs.length) m.set(4n, certs);
+    if (withdrawal > 0n) m.set(5n, new Map([[o.wallet.rewardAccountBytes, withdrawal]]));
+    return encodeCbor(m);
+  };
+  const feeFor = bodyBytes => {
+    const dummy = new Map([[0n, Array.from({ length: witnessCount }, () => [new Uint8Array(32), new Uint8Array(64)])]]);
+    const size = BigInt(1 + bodyBytes.length + encodeCbor(dummy).length + 2);
+    return params.minFeeA * size + params.minFeeB + 1000n;
+  };
+
+  if (o.payment && o.payment.sendAll) {
+    // Gửi toàn bộ ADA: dùng hết UTXO, không có tiền thừa.
+    while (pool.length) take(pool[0]);
+    if (selected.length === 0) throw new Error('Ví chưa có ADA');
+    if (selected.length > MAX_INPUTS) throw new Error('Ví có quá nhiều UTXO nhỏ; hãy gộp bớt trước');
+    if (assemble(0n).hasLeftAssets) throw new Error('Ví còn token khác nên không thể gửi toàn bộ ADA; hãy nhập số tiền cụ thể');
+    const total = selected.reduce((s, u) => s + u.lovelace, 0n) + withdrawal - deposit;
+    let fee = 200000n, body;
+    for (let i = 0; i < 6; i++) {
+      payOut.lovelace = total - fee;
+      if (payOut.lovelace <= 0n) throw new Error('Số dư ADA không đủ trả phí');
+      body = bodyOf(assemble(fee), fee, false);
+      const f = feeFor(body);
+      if (f === fee) break;
+      fee = f;
+    }
+    payOut.lovelace = total - fee;
+    body = bodyOf(assemble(fee), fee, false);
+    if (payOut.lovelace < minUtxo(outputCbor(payOut.addressBytes, payOut.lovelace, payOut.assets), params)) throw new Error('Số dư ADA quá nhỏ để gửi');
+    return { bodyBytes: body, hash: blake2b(body, 32), fee, witnessCount };
+  }
+
+  for (let guard = 0; guard < 200; guard++) {
+    if (selected.length === 0) {
+      if (!pool.length) throw new Error('Ví chưa có ADA');
+      take(pool[0]);
+      continue;
+    }
+    if (selected.length > MAX_INPUTS) throw new Error('Ví có quá nhiều UTXO nhỏ; hãy gộp bớt trước');
+    let fee = 200000n, a, body;
+    for (let i = 0; i < 6; i++) {
+      a = assemble(fee);
+      body = bodyOf(a, fee, true);
+      const f = feeFor(body);
+      if (f === fee) break;
+      fee = f;
+    }
+    if (a.changeLov >= a.changeMin) {
+      return { bodyBytes: body, hash: blake2b(body, 32), fee, witnessCount };
+    }
+    if (pool.length) { take(pool[0]); continue; }
+    throw new Error(`Số dư ADA không đủ. Sau khi gửi, phần còn lại phải từ ${formatUnits(a.changeMin)} ADA trở lên — hãy gửi ít hơn hoặc chọn "Tối đa".`);
+  }
+  throw new Error('Không dựng được giao dịch');
+}
+
+/** Chứng chỉ ủy quyền Conway theo trạng thái đăng ký khóa stake. */
+function delegationCert({ stakeHash, poolHash = null, drep = null, registered, keyDeposit }) {
+  if (!poolHash && !drep) throw new Error('Chưa chọn pool hoặc DRep');
+  const cred = [0n, stakeHash];
+  if (registered) {
+    if (poolHash && drep) return { cert: [10n, cred, poolHash, drep], deposit: 0n };
+    if (poolHash) return { cert: [2n, cred, poolHash], deposit: 0n };
+    return { cert: [9n, cred, drep], deposit: 0n };
+  }
+  if (poolHash && drep) return { cert: [13n, cred, poolHash, drep, keyDeposit], deposit: keyDeposit };
+  if (poolHash) return { cert: [11n, cred, poolHash, keyDeposit], deposit: keyDeposit };
+  return { cert: [12n, cred, drep, keyDeposit], deposit: keyDeposit };
+}
+
+function assembleSignedTx(bodyBytes, witnesses) {
+  const ws = encodeCbor(new Map([[0n, witnesses.map(w => [w.vkey, w.sig])]]));
+  return concatBytes(new Uint8Array([0x84]), bodyBytes, ws, new Uint8Array([0xf5, 0xf6]));
+}
+
+// ----------------------------------------------------------------------------
+// Gói dữ liệu QR giữa hai máy:  AG1.<loại>.<mã kiểm>.<i>.<n>.<base64url>
+//   P = ghép nối (xpub 64 byte)   U = giao dịch chưa ký (body)   S = chữ ký
+// ----------------------------------------------------------------------------
+const FRAME_CHARS = 150;
+
+function encodeFrames(type, payloadBytes) {
+  const id = bytesToHex(sha256(payloadBytes).subarray(0, 4));
+  const b64 = bytesToB64(payloadBytes);
+  const n = Math.max(1, Math.ceil(b64.length / FRAME_CHARS));
+  if (n > 60) throw new Error('Dữ liệu quá lớn để truyền bằng QR');
+  const size = Math.ceil(b64.length / n);
+  return Array.from({ length: n }, (_, i) => `AG1.${type}.${id}.${i + 1}.${n}.${b64.slice(i * size, (i + 1) * size)}`);
+}
+
+class FrameCollector {
+  constructor(expectType) { this.expectType = expectType; this.reset(); }
+  reset() { this.id = null; this.total = 0; this.parts = new Map(); }
+  /** @returns {{done:boolean, have:number, total:number, payload?:Uint8Array, error?:string}} */
+  add(text) {
+    const m = /^AG1\.([PUS])\.([0-9a-f]{8})\.(\d{1,2})\.(\d{1,2})\.([A-Za-z0-9_-]*)$/.exec(String(text).trim());
+    if (!m) return { done: false, have: this.parts.size, total: this.total, error: 'Không phải mã QR của ví này' };
+    const [, type, id, iS, nS, chunk] = m;
+    const i = Number(iS), n = Number(nS);
+    if (type !== this.expectType) {
+      const names = { P: 'ghép nối', U: 'giao dịch chưa ký', S: 'chữ ký' };
+      return { done: false, have: this.parts.size, total: this.total, error: `Đây là mã ${names[type]}, cần mã ${names[this.expectType]}` };
+    }
+    if (n < 1 || n > 60 || i < 1 || i > n) return { done: false, have: 0, total: 0, error: 'Mã QR không hợp lệ' };
+    if (this.id !== id || this.total !== n) { this.reset(); this.id = id; this.total = n; }
+    this.parts.set(i, chunk);
+    if (this.parts.size < n) return { done: false, have: this.parts.size, total: n };
+    let b64 = '';
+    for (let k = 1; k <= n; k++) b64 += this.parts.get(k);
+    let payload;
+    try { payload = b64ToBytes(b64); } catch { this.reset(); return { done: false, have: 0, total: n, error: 'Mã QR bị lỗi, hãy quét lại' }; }
+    if (bytesToHex(sha256(payload).subarray(0, 4)) !== id) { this.reset(); return { done: false, have: 0, total: n, error: 'Mã QR bị lỗi, hãy quét lại' }; }
+    return { done: true, have: n, total: n, payload };
+  }
+}
+
+/** Gói chữ ký: txHash(32) || n × (vkey(32) || sig(64)) */
+function packSignatures(hash, witnesses) {
+  return concatBytes(hash, ...witnesses.flatMap(w => [w.vkey, w.sig]));
+}
+function unpackSignatures(bytes) {
+  if (bytes.length !== 128 && bytes.length !== 224) throw new Error('Gói chữ ký không hợp lệ');
+  const witnesses = [];
+  for (let p = 32; p < bytes.length; p += 96) witnesses.push({ vkey: bytes.slice(p, p + 32), sig: bytes.slice(p + 32, p + 96) });
+  return { hash: bytes.slice(0, 32), witnesses };
+}
+
+
+// ---- core/qr.js ----
+// ============================================================================
+// core/qr.js — Tạo và quét mã QR chuẩn ISO/IEC 18004 (không phụ thuộc thư viện)
+//   - Phần TẠO mã: giữ từ dự án gốc, đã đối chiếu bằng OpenCV (tests/).
+//   - Phần QUÉT mã: viết mới, có sửa lỗi Reed–Solomon, kiểm thử bằng ảnh xoay,
+//     nghiêng, mờ và nhiễu (tests/).
+// ============================================================================
+
+
+
+const ECC_CODEWORDS_PER_BLOCK_L = [
+  -1,
+   7, 10, 15, 20, 26, 18, 20, 24, 30, 18,
+  20, 24, 26, 30, 22, 24, 28, 30, 28, 28,
+  28, 28, 30, 30, 26
+];
+
+const NUM_ERROR_CORRECTION_BLOCKS_L = [
+  -1,
+   1,  1,  1,  1,  1,  2,  2,  2,  2,  4,
+   4,  4,  4,  4,  6,  6,  6,  6,  7,  8,
+   8,  9,  9, 10, 12
+];
+
+function gfMul(x, y) {
+  let z = 0;
+  for (let i = 7; i >= 0; i--) {
+    z = (z << 1) ^ ((z >>> 7) * 0x11d);
+    z ^= ((y >>> i) & 1) * x;
+  }
+  return z;
+}
+
+function rsComputeDivisor(degree) {
+  const result = new Uint8Array(degree);
+  result[degree - 1] = 1;
+  let root = 1;
+  for (let i = 0; i < degree; i++) {
+    for (let j = 0; j < degree; j++) {
+      result[j] = gfMul(result[j], root);
+      if (j + 1 < degree) result[j] ^= result[j + 1];
+    }
+    root = gfMul(root, 0x02);
+  }
+  return result;
+}
+
+function rsComputeRemainder(data, divisor) {
+  const result = new Uint8Array(divisor.length);
+  for (const b of data) {
+    const factor = b ^ result[0];
+    result.copyWithin(0, 1);
+    result[divisor.length - 1] = 0;
+    divisor.forEach((v, i) => {
+      result[i] ^= gfMul(v, factor);
+    });
+  }
+  return result;
+}
+
+function getAlignmentPatternPositions(ver) {
+  if (ver === 1) return [];
+  const numAlign = Math.floor(ver / 7) + 2;
+  const step = (ver === 32) ? 26 : Math.floor((ver * 4 + numAlign * 2 + 1) / (numAlign * 2 - 2)) * 2;
+  const result = [6];
+  for (let pos = ver * 4 + 10; result.length < numAlign; pos -= step) {
+    result.splice(1, 0, pos);
+  }
+  return result;
+}
+
+function getNumRawDataModules(ver) {
+  let result = (16 * ver + 128) * ver + 64;
+  if (ver >= 2) {
+    const numAlign = Math.floor(ver / 7) + 2;
+    result -= (25 * numAlign - 10) * numAlign - 55;
+    if (ver >= 7) result -= 36;
+  }
+  return result;
+}
+
+function getNumDataCodewords(ver) {
+  return Math.floor(getNumRawDataModules(ver) / 8) -
+    ECC_CODEWORDS_PER_BLOCK_L[ver] * NUM_ERROR_CORRECTION_BLOCKS_L[ver];
+}
+
+function generateQrMatrix(inputData) {
+  const dataBytes = typeof inputData === 'string' ? utf8ToBytes(inputData) : inputData;
+
+  let ver = 1;
+  for (; ver <= 25; ver++) {
+    const capBytes = getNumDataCodewords(ver);
+    const charCountBits = ver <= 9 ? 8 : 16;
+    const neededBits = 4 + charCountBits + dataBytes.length * 8;
+    if (neededBits <= capBytes * 8) break;
+  }
+  if (ver > 25) {
+    throw new Error('Dữ liệu quá lớn cho 1 mã QR đơn.');
+  }
+
+  const dataCapacityBytes = getNumDataCodewords(ver);
+  const bitBuf = [];
+  function appendBits(val, len) {
+    for (let i = len - 1; i >= 0; i--) bitBuf.push((val >>> i) & 1);
+  }
+
+  appendBits(0b0100, 4);
+  appendBits(dataBytes.length, ver <= 9 ? 8 : 16);
+  for (const b of dataBytes) appendBits(b, 8);
+
+  const capBits = dataCapacityBytes * 8;
+  appendBits(0, Math.min(4, capBits - bitBuf.length));
+  appendBits(0, (8 - (bitBuf.length % 8)) % 8);
+
+  for (let padByte = 0xec; bitBuf.length < capBits; padByte ^= 0xec ^ 0x11) {
+    appendBits(padByte, 8);
+  }
+
+  const dataCodewords = new Uint8Array(dataCapacityBytes);
+  for (let i = 0; i < bitBuf.length; i++) {
+    dataCodewords[i >>> 3] |= bitBuf[i] << (7 - (i & 7));
+  }
+
+  const numBlocks = NUM_ERROR_CORRECTION_BLOCKS_L[ver];
+  const blockEccLen = ECC_CODEWORDS_PER_BLOCK_L[ver];
+  const rawCodewords = Math.floor(getNumRawDataModules(ver) / 8);
+  const numShortBlocks = numBlocks - (rawCodewords % numBlocks);
+  const shortBlockLen = Math.floor(rawCodewords / numBlocks);
+
+  const blocks = [];
+  const rsDiv = rsComputeDivisor(blockEccLen);
+  for (let i = 0, k = 0; i < numBlocks; i++) {
+    const datLen = shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1);
+    const dat = dataCodewords.subarray(k, k + datLen);
+    k += datLen;
+    const ecc = rsComputeRemainder(dat, rsDiv);
+    blocks.push({ dat, ecc });
+  }
+
+  const allCodewords = new Uint8Array(rawCodewords);
+  let ptr = 0;
+  const maxDatLen = shortBlockLen - blockEccLen + 1;
+  for (let i = 0; i < maxDatLen; i++) {
+    for (let j = 0; j < blocks.length; j++) {
+      if (i < blocks[j].dat.length) {
+        allCodewords[ptr++] = blocks[j].dat[i];
+      }
+    }
+  }
+  for (let i = 0; i < blockEccLen; i++) {
+    for (let j = 0; j < blocks.length; j++) {
+      allCodewords[ptr++] = blocks[j].ecc[i];
+    }
+  }
+
+  const size = ver * 4 + 17;
+  const modules = Array.from({ length: size }, () => new Uint8Array(size));
+  const isFunc = Array.from({ length: size }, () => new Uint8Array(size));
+
+  function setFunctionModule(x, y, isDark) {
+    modules[y][x] = isDark ? 1 : 0;
+    isFunc[y][x] = 1;
+  }
+
+  function drawFinderPattern(cx, cy) {
+    for (let dy = -4; dy <= 4; dy++) {
+      for (let dx = -4; dx <= 4; dx++) {
+        const dist = Math.max(Math.abs(dx), Math.abs(dy));
+        const xx = cx + dx, yy = cy + dy;
+        if (0 <= xx && xx < size && 0 <= yy && yy < size) {
+          setFunctionModule(xx, yy, dist !== 2 && dist !== 4);
+        }
+      }
+    }
+  }
+
+  function drawAlignmentPattern(cx, cy) {
+    for (let dy = -2; dy <= 2; dy++) {
+      for (let dx = -2; dx <= 2; dx++) {
+        setFunctionModule(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+      }
+    }
+  }
+
+  for (let i = 0; i < size; i++) {
+    setFunctionModule(6, i, i % 2 === 0);
+    setFunctionModule(i, 6, i % 2 === 0);
+  }
+
+  drawFinderPattern(3, 3);
+  drawFinderPattern(size - 4, 3);
+  drawFinderPattern(3, size - 4);
+
+  const alignPos = getAlignmentPatternPositions(ver);
+  for (let i = 0; i < alignPos.length; i++) {
+    for (let j = 0; j < alignPos.length; j++) {
+      if (!((i === 0 && j === 0) || (i === 0 && j === alignPos.length - 1) || (i === alignPos.length - 1 && j === 0))) {
+        drawAlignmentPattern(alignPos[i], alignPos[j]);
+      }
+    }
+  }
+
+  function drawFormatBits(mask) {
+    const data = (0b01 << 3) | mask;
+    let rem = data;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    const bits = ((data << 10) | rem) ^ 0x5412;
+
+    for (let i = 0; i <= 5; i++) setFunctionModule(8, i, ((bits >>> i) & 1) !== 0);
+    setFunctionModule(8, 7, ((bits >>> 6) & 1) !== 0);
+    setFunctionModule(8, 8, ((bits >>> 7) & 1) !== 0);
+    setFunctionModule(7, 8, ((bits >>> 8) & 1) !== 0);
+    for (let i = 9; i < 15; i++) setFunctionModule(14 - i, 8, ((bits >>> i) & 1) !== 0);
+
+    for (let i = 0; i < 8; i++) setFunctionModule(size - 1 - i, 8, ((bits >>> i) & 1) !== 0);
+    for (let i = 8; i < 15; i++) setFunctionModule(8, size - 15 + i, ((bits >>> i) & 1) !== 0);
+    setFunctionModule(8, size - 8, true);
+  }
+
+  drawFormatBits(0);
+
+  if (ver >= 7) {
+    let rem = ver;
+    for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25);
+    const bits = (ver << 12) | rem;
+    for (let i = 0; i < 18; i++) {
+      const bit = ((bits >>> i) & 1) !== 0;
+      const a = size - 11 + (i % 3);
+      const b = Math.floor(i / 3);
+      setFunctionModule(a, b, bit);
+      setFunctionModule(b, a, bit);
+    }
+  }
+
+  let bitIdx = 0;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++) {
+      for (let j = 0; j < 2; j++) {
+        const x = right - j;
+        const upward = ((right + 1) & 2) === 0;
+        const y = upward ? size - 1 - vert : vert;
+        if (!isFunc[y][x] && bitIdx < allCodewords.length * 8) {
+          modules[y][x] = (allCodewords[bitIdx >>> 3] >>> (7 - (bitIdx & 7))) & 1;
+          bitIdx++;
+        }
+      }
+    }
+  }
+
+  const mask = 0;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (!isFunc[y][x] && ((x + y) % 2 === 0)) {
+        modules[y][x] ^= 1;
+      }
+    }
+  }
+  drawFormatBits(mask);
+
+  return { size, version: ver, modules };
+}
+function renderQrToCanvas(canvas, textOrBytes, pixelSize = 320) {
+  const { size, modules } = generateQrMatrix(textOrBytes);
+  const quietZone = 5;
+  const totalModules = size + quietZone * 2;
+  const scale = Math.max(6, Math.round(pixelSize / totalModules));
+  const actualSize = totalModules * scale;
+
+  canvas.width = actualSize;
+  canvas.height = actualSize;
+  canvas.style.imageRendering = 'pixelated';
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, actualSize, actualSize);
+
+  ctx.fillStyle = '#000000';
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (modules[y][x]) {
+        ctx.fillRect((x + quietZone) * scale, (y + quietZone) * scale, scale, scale);
+      }
+    }
+  }
+  return { size, scale };
+}
+
+// ============================================================================
+// QUÉT MÃ QR
+// ============================================================================
+const ECC_PER_BLOCK = [
+  [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30], // L
+  [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28], // M
+  [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30], // Q
+  [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]  // H
+];
+const NUM_BLOCKS = [
+  [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],
+  [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],
+  [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],
+  [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81]
+];
+const FORMAT_ECL = [1, 0, 3, 2]; // bit định dạng -> chỉ số bảng (L=01, M=00, Q=11, H=10)
+
+// --- GF(256) & Reed–Solomon ---
+const GF_EXP = new Uint8Array(512), GF_LOG = new Uint8Array(256);
+(() => { let x = 1; for (let i = 0; i < 255; i++) { GF_EXP[i] = x; GF_LOG[x] = i; x <<= 1; if (x & 256) x ^= 0x11d; } for (let i = 255; i < 512; i++) GF_EXP[i] = GF_EXP[i - 255]; })();
+const gmul = (a, b) => (a && b ? GF_EXP[GF_LOG[a] + GF_LOG[b]] : 0);
+const gdiv = (a, b) => (a ? GF_EXP[(GF_LOG[a] + 255 - GF_LOG[b]) % 255] : 0);
+
+/** Sửa lỗi tại chỗ. Trả về false nếu không sửa được. */
+function rsCorrect(block, eccLen) {
+  const n = block.length;
+  const synd = new Uint8Array(eccLen);
+  let clean = true;
+  for (let i = 0; i < eccLen; i++) {
+    let s = 0;
+    const a = GF_EXP[i];
+    for (let j = 0; j < n; j++) s = gmul(s, a) ^ block[j];
+    synd[i] = s;
+    if (s) clean = false;
+  }
+  if (clean) return true;
+  // Berlekamp–Massey
+  let sigma = [1], prev = [1], L = 0, m = 1, b = 1;
+  for (let r = 0; r < eccLen; r++) {
+    let d = synd[r];
+    for (let i = 1; i <= L; i++) d ^= gmul(sigma[i] || 0, synd[r - i]);
+    if (d === 0) { m++; continue; }
+    const t = sigma.slice();
+    const coef = gdiv(d, b);
+    while (sigma.length < prev.length + m) sigma.push(0);
+    for (let i = 0; i < prev.length; i++) sigma[i + m] ^= gmul(coef, prev[i]);
+    if (2 * L <= r) { L = r + 1 - L; prev = t; b = d; m = 1; } else m++;
+  }
+  if (L * 2 > eccLen) return false;
+  // Chien: tìm vị trí lỗi
+  const positions = [];
+  for (let i = 0; i < n; i++) {
+    const xInv = GF_EXP[(255 - i) % 255];
+    let v = 0;
+    for (let k = L; k >= 0; k--) v = gmul(v, xInv) ^ (sigma[k] || 0);
+    if (v === 0) positions.push(i);
+  }
+  if (positions.length !== L) return false;
+  // Forney
+  const omega = new Uint8Array(eccLen);
+  for (let i = 0; i < eccLen; i++) {
+    let v = 0;
+    for (let k = 0; k <= Math.min(i, L); k++) v ^= gmul(sigma[k] || 0, synd[i - k]);
+    omega[i] = v;
+  }
+  for (const p of positions) {
+    const xInv = GF_EXP[(255 - p) % 255];
+    let num = 0;
+    for (let k = eccLen - 1; k >= 0; k--) num = gmul(num, xInv) ^ omega[k];
+    let den = 0;
+    for (let k = 1; k <= L; k += 2) den ^= gmul(sigma[k] || 0, GF_EXP[((k - 1) * (255 - p)) % 255]);
+    if (den === 0) return false;
+    block[n - 1 - p] ^= gmul(GF_EXP[p], gdiv(num, den));
+  }
+  for (let i = 0; i < eccLen; i++) {
+    let s = 0;
+    const a = GF_EXP[i];
+    for (let j = 0; j < n; j++) s = gmul(s, a) ^ block[j];
+    if (s) return false;
+  }
+  return true;
+}
+
+function alignmentPositions(ver) {
+  if (ver === 1) return [];
+  const num = Math.floor(ver / 7) + 2;
+  const step = Math.floor((ver * 8 + num * 3 + 5) / (num * 4 - 4)) * 2;
+  const res = [6];
+  for (let pos = ver * 4 + 10; res.length < num; pos -= step) res.splice(1, 0, pos);
+  return res;
+}
+
+function rawDataModules(ver) {
+  let r = (16 * ver + 128) * ver + 64;
+  if (ver >= 2) { const n = Math.floor(ver / 7) + 2; r -= (25 * n - 10) * n - 55; if (ver >= 7) r -= 36; }
+  return r;
+}
+
+const FORMAT_CODES = (() => {
+  const out = [];
+  for (let data = 0; data < 32; data++) {
+    let rem = data;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    out.push(((data << 10) | rem) ^ 0x5412);
+  }
+  return out;
+})();
+const popcount = v => { let c = 0; while (v) { c += v & 1; v >>>= 1; } return c; };
+
+/** Giải mã lưới module (grid[y][x] = 1 nếu đen). Trả về chuỗi hoặc null. */
+function decodeQrGrid(grid) {
+  const size = grid.length;
+  const ver = (size - 17) / 4;
+  if (!Number.isInteger(ver) || ver < 1 || ver > 40) return null;
+  const g = (x, y) => grid[y][x] & 1;
+
+  const f1 = [], f2 = [];
+  for (let i = 0; i <= 5; i++) f1.push(g(8, i));
+  f1.push(g(8, 7), g(8, 8), g(7, 8));
+  for (let i = 9; i < 15; i++) f1.push(g(14 - i, 8));
+  for (let i = 0; i < 8; i++) f2.push(g(size - 1 - i, 8));
+  for (let i = 8; i < 15; i++) f2.push(g(8, size - 15 + i));
+  const toInt = bits => bits.reduce((acc, bit, i) => acc | (bit << i), 0);
+  let best = -1, bestDist = 4;
+  for (const raw of [toInt(f1), toInt(f2)]) {
+    for (let d = 0; d < 32; d++) {
+      const dist = popcount(raw ^ FORMAT_CODES[d]);
+      if (dist < bestDist) { bestDist = dist; best = d; }
+    }
+  }
+  if (best < 0) return null;
+  const ecl = FORMAT_ECL[best >> 3], mask = best & 7;
+
+  const func = Array.from({ length: size }, () => new Uint8Array(size));
+  const mark = (x0, y0, w, h) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) if (x >= 0 && y >= 0 && x < size && y < size) func[y][x] = 1; };
+  mark(0, 0, 9, 9); mark(size - 8, 0, 8, 9); mark(0, size - 8, 9, 8);
+  mark(6, 0, 1, size); mark(0, 6, size, 1);
+  const ap = alignmentPositions(ver);
+  for (let i = 0; i < ap.length; i++) for (let j = 0; j < ap.length; j++) {
+    if ((i === 0 && j === 0) || (i === 0 && j === ap.length - 1) || (i === ap.length - 1 && j === 0)) continue;
+    mark(ap[i] - 2, ap[j] - 2, 5, 5);
+  }
+  if (ver >= 7) { mark(size - 11, 0, 3, 6); mark(0, size - 11, 6, 3); }
+
+  const maskFn = [
+    (x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, (x, y) => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
+    (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0, (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0
+  ][mask];
+
+  const totalCodewords = Math.floor(rawDataModules(ver) / 8);
+  const codewords = new Uint8Array(totalCodewords);
+  let bitIdx = 0;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++) {
+      for (let j = 0; j < 2; j++) {
+        const x = right - j;
+        const upward = ((right + 1) & 2) === 0;
+        const y = upward ? size - 1 - vert : vert;
+        if (func[y][x] || bitIdx >= totalCodewords * 8) continue;
+        const bit = g(x, y) ^ (maskFn(x, y) ? 1 : 0);
+        codewords[bitIdx >>> 3] |= bit << (7 - (bitIdx & 7));
+        bitIdx++;
+      }
+    }
+  }
+
+  const numBlocks = NUM_BLOCKS[ecl][ver], eccLen = ECC_PER_BLOCK[ecl][ver];
+  const numShort = numBlocks - (totalCodewords % numBlocks);
+  const shortLen = Math.floor(totalCodewords / numBlocks);
+  const shortData = shortLen - eccLen;
+  const blocks = Array.from({ length: numBlocks }, (_, j) => new Uint8Array(shortLen + (j < numShort ? 0 : 1)));
+  let k = 0;
+  for (let i = 0; i <= shortData; i++) for (let j = 0; j < numBlocks; j++) {
+    if (i === shortData && j < numShort) continue;
+    blocks[j][i] = codewords[k++];
+  }
+  for (let i = 0; i < eccLen; i++) for (let j = 0; j < numBlocks; j++) {
+    blocks[j][shortData + (j < numShort ? 0 : 1) + i] = codewords[k++];
+  }
+  const data = [];
+  for (const blk of blocks) {
+    if (!rsCorrect(blk, eccLen)) return null;
+    for (let i = 0; i < blk.length - eccLen; i++) data.push(blk[i]);
+  }
+
+  // Luồng bit -> văn bản
+  let pos = 0;
+  const totalBits = data.length * 8;
+  const read = n => { let v = 0; for (let i = 0; i < n; i++) { v = (v << 1) | ((data[pos >>> 3] >>> (7 - (pos & 7))) & 1); pos++; } return v; };
+  const bytes = [];
+  const ALNUM = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:';
+  const cc = ver <= 9 ? 0 : ver <= 26 ? 1 : 2;
+  while (pos + 4 <= totalBits) {
+    const mode = read(4);
+    if (mode === 0) break;
+    if (mode === 4) {
+      const bits = [8, 16, 16][cc];
+      if (pos + bits > totalBits) return null;
+      const n = read(bits);
+      if (pos + n * 8 > totalBits) return null;
+      for (let i = 0; i < n; i++) bytes.push(read(8));
+    } else if (mode === 2) {
+      const bits = [9, 11, 13][cc];
+      if (pos + bits > totalBits) return null;
+      let n = read(bits);
+      while (n >= 2) { if (pos + 11 > totalBits) return null; const v = read(11); if (v >= 2025) return null; bytes.push(ALNUM.charCodeAt(Math.floor(v / 45)), ALNUM.charCodeAt(v % 45)); n -= 2; }
+      if (n === 1) { if (pos + 6 > totalBits) return null; const v = read(6); if (v >= 45) return null; bytes.push(ALNUM.charCodeAt(v)); }
+    } else if (mode === 1) {
+      const bits = [10, 12, 14][cc];
+      if (pos + bits > totalBits) return null;
+      let n = read(bits);
+      while (n >= 3) { if (pos + 10 > totalBits) return null; const v = read(10); if (v >= 1000) return null; for (const ch of String(v).padStart(3, '0')) bytes.push(ch.charCodeAt(0)); n -= 3; }
+      if (n === 2) { const v = read(7); if (v >= 100) return null; for (const ch of String(v).padStart(2, '0')) bytes.push(ch.charCodeAt(0)); }
+      if (n === 1) { const v = read(4); if (v >= 10) return null; bytes.push(48 + v); }
+    } else if (mode === 7) {
+      const first = read(8);
+      if (first & 0x80) read((first & 0x40) ? 16 : 8);
+    } else return null;
+  }
+  if (!bytes.length) return null;
+  return new TextDecoder().decode(new Uint8Array(bytes));
+}
+
+// --- Xử lý ảnh ---
+function binarize(img, mode) {
+  const { data, width: w, height: h } = img;
+  const gray = new Uint8Array(w * h);
+  for (let i = 0, p = 0; i < gray.length; i++, p += 4) gray[i] = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
+  const bin = new Uint8Array(w * h);
+  if (mode === 'global') {
+    const hist = new Uint32Array(256);
+    for (let i = 0; i < gray.length; i++) hist[gray[i]]++;
+    let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
+    let sumB = 0, wB = 0, max = 0, thr = 127;
+    for (let t = 0; t < 256; t++) {
+      wB += hist[t]; if (!wB) continue;
+      const wF = gray.length - wB; if (!wF) break;
+      sumB += t * hist[t];
+      const mB = sumB / wB, mF = (sum - sumB) / wF, between = wB * wF * (mB - mF) * (mB - mF);
+      if (between > max) { max = between; thr = t; }
+    }
+    for (let i = 0; i < gray.length; i++) bin[i] = gray[i] <= thr ? 1 : 0;
+    return bin;
+  }
+  const w1 = w + 1;
+  const sat = new Float64Array(w1 * (h + 1));
+  for (let y = 0; y < h; y++) {
+    let row = 0;
+    for (let x = 0; x < w; x++) { row += gray[y * w + x]; sat[(y + 1) * w1 + x + 1] = sat[y * w1 + x + 1] + row; }
+  }
+  const r = Math.max(12, Math.floor(Math.min(w, h) / 7));
+  for (let y = 0; y < h; y++) {
+    const y0 = Math.max(0, y - r), y1 = Math.min(h, y + r + 1);
+    for (let x = 0; x < w; x++) {
+      const x0 = Math.max(0, x - r), x1 = Math.min(w, x + r + 1);
+      const s = sat[y1 * w1 + x1] - sat[y0 * w1 + x1] - sat[y1 * w1 + x0] + sat[y0 * w1 + x0];
+      const mean = s / ((x1 - x0) * (y1 - y0));
+      bin[y * w + x] = gray[y * w + x] < mean - 8 ? 1 : 0;
+    }
+  }
+  return bin;
+}
+
+function findFinders(bin, w, h) {
+  const found = [];
+  const ratioOk = (c, tol = 0.6) => {
+    const total = c[0] + c[1] + c[2] + c[3] + c[4];
+    if (total < 7) return false;
+    const m = total / 7, t = m * tol;
+    return Math.abs(c[0] - m) < t && Math.abs(c[1] - m) < t && Math.abs(c[2] - 3 * m) < 3 * t && Math.abs(c[3] - m) < t && Math.abs(c[4] - m) < t;
+  };
+  // Đo lại dãy 1:1:3:1:1 theo một hướng qua tâm (cx, cy)
+  const cross = (cx, cy, dx, dy, maxRun) => {
+    const c = [0, 0, 0, 0, 0];
+    const at = (x, y) => (x >= 0 && y >= 0 && x < w && y < h ? bin[y * w + x] : -1);
+    let x = cx, y = cy;
+    while (at(x, y) === 1 && c[2] <= maxRun) { c[2]++; x -= dx; y -= dy; }
+    while (at(x, y) === 0 && c[1] <= maxRun) { c[1]++; x -= dx; y -= dy; }
+    while (at(x, y) === 1 && c[0] <= maxRun) { c[0]++; x -= dx; y -= dy; }
+    x = cx + dx; y = cy + dy;
+    let fwd = 0;
+    while (at(x, y) === 1 && c[2] <= maxRun * 2) { c[2]++; fwd++; x += dx; y += dy; }
+    while (at(x, y) === 0 && c[3] <= maxRun) { c[3]++; x += dx; y += dy; }
+    while (at(x, y) === 1 && c[4] <= maxRun) { c[4]++; x += dx; y += dy; }
+    if (!c[0] || !c[1] || !c[3] || !c[4] || !ratioOk(c)) return null;
+    const total = c[0] + c[1] + c[2] + c[3] + c[4];
+    const back = c[2] - fwd; // số điểm đen từ tâm về phía trước (kể cả tâm)
+    return { center: (dx ? cx : cy) - (back - 1) + (c[2] - 1) / 2, total };
+  };
+  const step = Math.max(1, Math.floor(h / 240));
+  for (let y = 0; y < h; y += step) {
+    const c = [0, 0, 0, 0, 0];
+    let state = 0;
+    for (let x = 0; x <= w; x++) {
+      const v = x < w ? bin[y * w + x] : (state & 1 ? 1 : 0) ^ 1; // ép kết thúc dãy ở mép phải
+      const dark = v === 1;
+      if (dark === ((state & 1) === 0)) { c[state]++; continue; }
+      if (state < 4) { c[++state] = 1; continue; }
+      // state === 4 và gặp điểm sáng: thử khớp
+      if (ratioOk(c)) {
+        const total = c[0] + c[1] + c[2] + c[3] + c[4];
+        const cx0 = Math.round(x - c[4] - c[3] - c[2] / 2);
+        const v1 = cross(cx0, y, 0, 1, total);
+        if (v1) {
+          const cy = Math.round(v1.center);
+          const h1 = cross(cx0, cy, 1, 0, total);
+          if (h1 && Math.abs(h1.total - v1.total) < 0.4 * Math.max(h1.total, v1.total) && cross(Math.round(h1.center), cy, 1, 1, total)) {
+            const fx = h1.center, fy = v1.center, ms = (h1.total + v1.total) / 14;
+            const hit = found.find(f => Math.abs(f.x - fx) < f.ms * 2.5 && Math.abs(f.y - fy) < f.ms * 2.5);
+            if (hit) { hit.x = (hit.x * hit.n + fx) / (hit.n + 1); hit.y = (hit.y * hit.n + fy) / (hit.n + 1); hit.ms = (hit.ms * hit.n + ms) / (hit.n + 1); hit.n++; }
+            else found.push({ x: fx, y: fy, ms, n: 1 });
+          }
+        }
+      }
+      c[0] = c[2]; c[1] = c[3]; c[2] = c[4]; c[3] = 1; c[4] = 0; state = 3;
+    }
+  }
+  // Tâm của hoa văn định vị cao 3 module nên số dòng quét trúng phải xấp xỉ 3·ms/step.
+  for (const f of found) f.q = Math.abs(Math.log((f.n * step) / (3 * f.ms)));
+  return found.filter(f => f.n >= 2 && f.q < 1.5).sort((a, b) => a.q - b.q);
+}
+
+function homography(src, dst) {
+  // Giải 8 ẩn của phép biến đổi phối cảnh src(module) -> dst(pixel)
+  const A = [];
+  for (let i = 0; i < 4; i++) {
+    const [x, y] = src[i], [u, v] = dst[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y, u]);
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y, v]);
+  }
+  for (let c = 0; c < 8; c++) {
+    let p = c;
+    for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    if (Math.abs(A[p][c]) < 1e-9) return null;
+    [A[c], A[p]] = [A[p], A[c]];
+    for (let r = 0; r < 8; r++) {
+      if (r === c) continue;
+      const f = A[r][c] / A[c][c];
+      for (let k = c; k < 9; k++) A[r][k] -= f * A[c][k];
+    }
+  }
+  const hh = A.map((row, i) => row[8] / row[i]);
+  return (x, y) => { const d = hh[6] * x + hh[7] * y + 1; return [(hh[0] * x + hh[1] * y + hh[2]) / d, (hh[3] * x + hh[4] * y + hh[5]) / d]; };
+}
+
+function tryDecodeWith(bin, w, h, tl, tr, bl, dim) {
+  const at = (x, y) => { x = Math.round(x); y = Math.round(y); return x >= 0 && y >= 0 && x < w && y < h ? bin[y * w + x] : 0; };
+  const span = dim - 7;
+  const ux = (tr.x - tl.x) / span, uy = (tr.y - tl.y) / span, vx = (bl.x - tl.x) / span, vy = (bl.y - tl.y) / span;
+  const corners = [];
+  // Phương án 1: ước lượng góc thứ tư theo phép affine
+  corners.push({ src: [dim - 3.5, dim - 3.5], dst: [tr.x + bl.x - tl.x, tr.y + bl.y - tl.y] });
+  // Phương án 2: dò hoa văn căn chỉnh (alignment) để bù méo phối cảnh
+  if (dim >= 25) {
+    const ex = tl.x + (dim - 10) * (ux + vx), ey = tl.y + (dim - 10) * (uy + vy);
+    let bestScore = 0, bx = ex, by = ey, bestTie = 1e9;
+    // Dò ở vài tỉ lệ module khác nhau: khi máy nghiêng, module ở góc xa to/nhỏ hơn ở góc gần.
+    for (const k of [1, 0.88, 1.13, 0.78, 1.27]) {
+      for (let a = -7; a <= 7; a += 0.34) for (let b = -7; b <= 7; b += 0.34) {
+        const cx = ex + a * ux + b * vx, cy = ey + a * uy + b * vy;
+        let score = 0;
+        for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) {
+          const expect = Math.max(Math.abs(i), Math.abs(j)) !== 1 ? 1 : 0;
+          if (at(cx + k * (i * ux + j * vx), cy + k * (i * uy + j * vy)) === expect) score++;
+        }
+        const tie = Math.abs(a) + Math.abs(b) + Math.abs(k - 1) * 4;
+        if (score > bestScore || (score === bestScore && tie < bestTie)) { bestScore = score; bestTie = tie; bx = cx; by = cy; }
+      }
+      if (bestScore === 25) break;
+    }
+    if (bestScore >= 23) corners.unshift({ src: [dim - 6.5, dim - 6.5], dst: [bx, by] });
+  }
+  for (const c of corners) {
+    const map = homography([[3.5, 3.5], [dim - 3.5, 3.5], [3.5, dim - 3.5], c.src], [[tl.x, tl.y], [tr.x, tr.y], [bl.x, bl.y], c.dst]);
+    if (!map) continue;
+    const grid = [];
+    for (let y = 0; y < dim; y++) {
+      const row = new Uint8Array(dim);
+      for (let x = 0; x < dim; x++) {
+        let votes = 0;
+        for (const [ox, oy] of [[0.5, 0.5], [0.32, 0.32], [0.68, 0.32], [0.32, 0.68], [0.68, 0.68]]) {
+          const [px, py] = map(x + ox, y + oy);
+          votes += at(px, py);
+        }
+        row[x] = votes >= 3 ? 1 : 0;
+      }
+      grid.push(row);
+    }
+    const text = decodeQrGrid(grid);
+    if (text !== null) return text;
+  }
+  return null;
+}
+
+/** Giải mã một ảnh { data, width, height } (ImageData). Trả về chuỗi hoặc null. */
+function decodeQrImage(img) {
+  const { width: w, height: h } = img;
+  if (w < 40 || h < 40) return null;
+  for (const mode of ['local', 'global']) {
+    const bin = binarize(img, mode);
+    const finders = findFinders(bin, w, h).slice(0, 9);
+    if (finders.length < 3) continue;
+    const triples = [];
+    for (let i = 0; i < finders.length; i++) for (let j = i + 1; j < finders.length; j++) for (let k = j + 1; k < finders.length; k++) {
+      const p = [finders[i], finders[j], finders[k]];
+      const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+      const sides = [[d(p[1], p[2]), 0], [d(p[0], p[2]), 1], [d(p[0], p[1]), 2]].sort((a, b) => b[0] - a[0]);
+      const tl = p[sides[0][1]];
+      const [a, b] = p.filter(q => q !== tl);
+      const la = d(tl, a), lb = d(tl, b);
+      const msAvg = (p[0].ms + p[1].ms + p[2].ms) / 3;
+      const msDev = Math.max(...p.map(q => Math.abs(q.ms - msAvg))) / msAvg;
+      const err = Math.abs(la - lb) / Math.max(la, lb) + Math.abs(sides[0][0] - Math.hypot(la, lb)) / sides[0][0] + msDev;
+      if (err > 0.6) continue;
+      const crossZ = (a.x - tl.x) * (b.y - tl.y) - (a.y - tl.y) * (b.x - tl.x);
+      triples.push({ err, tl, tr: crossZ > 0 ? a : b, bl: crossZ > 0 ? b : a, ms: msAvg });
+    }
+    triples.sort((x, y) => x.err - y.err);
+    for (const t of triples.slice(0, 4)) {
+      const est = (Math.hypot(t.tr.x - t.tl.x, t.tr.y - t.tl.y) + Math.hypot(t.bl.x - t.tl.x, t.bl.y - t.tl.y)) / 2 / t.ms + 7;
+      const base = Math.round((est - 17) / 4) * 4 + 17;
+      for (const dim of [base, base + 4, base - 4]) {
+        if (dim < 21 || dim > 177) continue;
+        const text = tryDecodeWith(bin, w, h, t.tl, t.tr, t.bl, dim);
+        if (text !== null) return text;
+      }
+    }
+  }
+  return null;
+}
+
+let nativeDetector;
+/** Quét một khung hình video. Ưu tiên bộ quét gốc của hệ điều hành, nếu không có thì dùng bộ quét JS. */
+async function scanVideoFrame(video, canvas) {
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if (!vw || !vh) return null;
+  if (nativeDetector === undefined) {
+    nativeDetector = null;
+    try {
+      if ('BarcodeDetector' in globalThis && (await globalThis.BarcodeDetector.getSupportedFormats()).includes('qr_code')) {
+        nativeDetector = new globalThis.BarcodeDetector({ formats: ['qr_code'] });
+      }
+    } catch { nativeDetector = null; }
+  }
+  if (nativeDetector) {
+    try {
+      const r = await nativeDetector.detect(video);
+      if (r && r.length && typeof r[0].rawValue === 'string' && r[0].rawValue) return r[0].rawValue;
+    } catch { /* dùng bộ quét JS bên dưới */ }
+  }
+  const side = Math.min(vw, vh);
+  const target = Math.min(640, side);
+  canvas.width = target; canvas.height = target;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(video, (vw - side) / 2, (vh - side) / 2, side, side, 0, 0, target, target);
+  return decodeQrImage(ctx.getImageData(0, 0, target, target));
+}
+
+// ---- core/ui.js ----
+// ============================================================================
+// core/ui.js — Thành phần giao diện dùng chung (không dùng innerHTML với dữ liệu
+// bên ngoài: mọi chuỗi đều được chèn bằng textContent)
+// ============================================================================
+
+
+
+
+/** Tạo phần tử DOM: h('button.primary', { onclick }, 'Chữ', con…) */
+function h(spec, props, ...children) {
+  const [tag, ...classes] = spec.split('.');
+  const el = document.createElement(tag || 'div');
+  if (classes.length) el.className = classes.join(' ');
+  if (props && (typeof props !== 'object' || props instanceof Node || Array.isArray(props))) { children.unshift(props); props = null; }
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'value') el.value = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of children.flat(Infinity)) {
+    if (c === null || c === undefined || c === false) continue;
+    el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  }
+  return el;
+}
+
+function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); return el; }
+
+let toastTimer;
+function toast(msg, isError = false) {
+  let t = document.getElementById('toast');
+  if (!t) { t = h('div', { id: 'toast', role: 'status', 'aria-live': 'polite' }); document.body.append(t); }
+  t.textContent = msg;
+  t.className = isError ? 'show error' : 'show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, isError ? 6000 : 3200);
+}
+
+const ICONS = {
+  wallet: 'M3 8a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8zM16 12.5h2',
+  scan: 'M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M4 12h16',
+  backup: 'M12 4v10M8 10l4 4 4-4M5 19h14',
+  send: 'M6 18L18 6M9 6h9v9',
+  stake: 'M4 18l5-6 4 3 7-9M15 6h5v5',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM8.5 12l2.5 2.5 4.5-5',
+  warn: 'M12 4l9 16H3L12 4zM12 10v4M12 17v.5',
+  folder: 'M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z'
+};
+function icon(name) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', 'icon');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', ICONS[name]);
+  svg.append(path);
+  return svg;
+}
+
+function drawQr(canvas, text) {
+  const { size, modules } = generateQrMatrix(text);
+  const quiet = 4, scale = Math.max(4, Math.floor(720 / (size + quiet * 2)));
+  const px = (size + quiet * 2) * scale;
+  canvas.width = px; canvas.height = px;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, px, px);
+  ctx.fillStyle = '#000';
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (modules[y][x]) ctx.fillRect((x + quiet) * scale, (y + quiet) * scale, scale, scale);
+}
+
+/** Khối hiển thị QR. Nếu dữ liệu chia nhiều khung thì tự chạy lần lượt. Trả về { el, stop }. */
+function qrView(frames, caption) {
+  const canvas = h('canvas.qr', { role: 'img', 'aria-label': 'Mã QR' });
+  const label = h('p.qr-label');
+  let i = 0, timer = null;
+  const show = () => {
+    drawQr(canvas, frames[i]);
+    label.textContent = frames.length > 1 ? `${caption} — phần ${i + 1}/${frames.length} (tự chuyển)` : caption;
+    i = (i + 1) % frames.length;
+  };
+  show();
+  if (frames.length > 1) timer = setInterval(show, 450);
+  return { el: h('div.qr-box', canvas, label), stop: () => clearInterval(timer) };
+}
+
+const framesFor = (type, bytes) => encodeFrames(type, bytes);
+
+/**
+ * Mở camera và quét. mode 'frames' gom các khung AG1 loại `type`; mode 'text' trả về chuỗi đầu tiên
+ * mà `accept(text)` chấp nhận. Trả về { el, stop }.
+ */
+function scanner({ type = null, accept = null, onResult, onCancel }) {
+  const video = h('video', { playsinline: true, muted: true, autoplay: true });
+  video.muted = true; video.playsInline = true;
+  const status = h('p.scan-status', 'Đang mở camera…');
+  const work = document.createElement('canvas');
+  const collector = type ? new FrameCollector(type) : null;
+  let stream = null, stopped = false, timer = null;
+  const stop = () => {
+    stopped = true; clearTimeout(timer);
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    video.srcObject = null;
+  };
+  const tick = async () => {
+    if (stopped) return;
+    let text = null;
+    try { text = await scanVideoFrame(video, work); } catch { text = null; }
+    if (stopped) return;
+    if (text) {
+      if (collector) {
+        const r = collector.add(text);
+        if (r.error) status.textContent = r.error;
+        else if (r.done) { stop(); onResult(r.payload); return; }
+        else status.textContent = `Đã nhận ${r.have}/${r.total} phần — giữ yên máy…`;
+      } else {
+        let value = null;
+        try { value = accept(text); } catch (e) { status.textContent = e.message; }
+        if (value !== null && value !== undefined) { stop(); onResult(value); return; }
+      }
+    }
+    timer = setTimeout(tick, 90);
+  };
+  (async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no-camera');
+      stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+      if (stopped) { stream.getTracks().forEach(t => t.stop()); return; }
+      video.srcObject = stream;
+      await video.play().catch(() => {});
+      status.textContent = 'Đưa mã QR vào giữa khung';
+      tick();
+    } catch {
+      status.textContent = 'Không mở được camera. Hãy cấp quyền Camera cho ứng dụng rồi thử lại.';
+    }
+  })();
+  const el = h('div.scanner', h('div.viewfinder', video), status,
+    h('button.ghost', { type: 'button', onclick: () => { stop(); onCancel(); } }, 'Hủy quét'));
+  return { el, stop };
+}
+
+/** Lưu file văn bản và cho người dùng CHỌN nơi lưu. Trả về true nếu đã lưu. */
+async function saveTextFile(name, text) {
+  const native = globalThis.AirGapNative;
+  if (native && native.saveFile) {
+    return new Promise(resolve => {
+      globalThis.__airgapSaveResult = ok => { delete globalThis.__airgapSaveResult; resolve(Boolean(ok)); };
+      native.saveFile(name, text);
+    });
+  }
+  if (globalThis.showSaveFilePicker) {
+    try {
+      const fh = await globalThis.showSaveFilePicker({ suggestedName: name, types: [{ description: 'File sao lưu ví', accept: { 'application/json': ['.json'] } }] });
+      const w = await fh.createWritable();
+      await w.write(text); await w.close();
+      return true;
+    } catch (e) { if (e && e.name === 'AbortError') return false; }
+  }
+  const file = new File([text], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    // iOS: bảng chia sẻ có mục "Lưu vào Tệp" để chọn thư mục
+    try { await navigator.share({ files: [file] }); return true; } catch (e) { if (e && e.name === 'AbortError') return false; }
+  }
+  const url = URL.createObjectURL(file);
+  const a = h('a', { href: url, download: name });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  return true;
+}
+
+/** Cho người dùng chọn một file và đọc nội dung văn bản (tối đa 64 KB). */
+function pickTextFile() {
+  return new Promise(resolve => {
+    const input = h('input', { type: 'file', accept: '.json,application/json,text/plain' });
+    input.addEventListener('change', async () => {
+      const f = input.files && input.files[0];
+      if (!f) return resolve(null);
+      if (f.size > 65536) { toast('File quá lớn, không phải file sao lưu của ví', true); return resolve(null); }
+      resolve(await f.text());
+    });
+    input.click();
+  });
+}
+
+/** Trường nhập có nhãn. */
+function field(labelText, inputProps) {
+  const id = 'f' + Math.random().toString(36).slice(2, 9);
+  const input = h(inputProps.rows ? 'textarea' : 'input', { id, autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', ...inputProps });
+  return { el: h('div.field', h('label', { for: id }, labelText), input), input };
+}
+
+function tabbar(tabs, active, onSelect) {
+  return h('nav.tabbar', { 'aria-label': 'Điều hướng' }, tabs.map(t =>
+    h('button' + (t.id === active ? '.active' : ''), { type: 'button', 'aria-current': t.id === active ? 'page' : null, onclick: () => onSelect(t.id) }, icon(t.icon), t.label)));
+}
+
+/** Hộp xác nhận trong trang (không dùng window.confirm). */
+function confirmDialog(message, yesLabel, onYes) {
+  const close = () => overlay.remove();
+  const overlay = h('div.overlay', { role: 'dialog', 'aria-modal': 'true' },
+    h('div.card', h('p', message),
+      h('button.danger', { type: 'button', onclick: () => { close(); onYes(); } }, yesLabel),
+      h('button.ghost', { type: 'button', onclick: close }, 'Hủy')));
+  document.body.append(overlay);
+}
+
+// ---- core/selftest.js ----
+// ============================================================================
+// core/selftest.js — Tự kiểm tra khi khởi động, chạy trên CHÍNH thiết bị này.
+// Nếu bộ máy JavaScript / WebCrypto của máy cho kết quả khác đáp án chuẩn,
+// ví từ chối chạy thay vì tạo khóa hay ký sai.
+// ============================================================================
+
+
+
+
+
+const KAT_MNEMONIC = 'test walk nut penalty hip pave soap entry language right filter choice';
+const KAT_ADDRESS = 'addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7';
+const KAT_BLAKE2B_ABC = 'bddd813c634239723171ef3fee98579b94964e3bb1cb3e427262c8c068d52319';
+
+/** @returns {Promise<string|null>} null nếu đạt, hoặc tên bước bị lỗi */
+async function selfTest() {
+  const step = async (name, fn) => { try { if ((await fn()) !== true) return name; } catch { return name; } return null; };
+  let acct, wallet, keys;
+  const checks = [
+    ['hàm băm BLAKE2b', () => bytesToHex(blake2b(utf8ToBytes('abc'), 32)) === KAT_BLAKE2B_ABC],
+    ['dẫn xuất khóa và địa chỉ', async () => {
+      acct = await deriveAccountFromEntropy(mnemonicToEntropy(KAT_MNEMONIC));
+      wallet = walletFromXpub(acct.accountXpub);
+      return wallet.baseAddress === KAT_ADDRESS;
+    }],
+    ['chữ ký Ed25519', () => {
+      keys = deriveSigningKeys(acct.accountXprv);
+      const msg = blake2b(utf8ToBytes('tu-kiem-tra'), 32);
+      const s = signExtendedEd25519(keys.payXprv, msg);
+      const bad = new Uint8Array(s.signature); bad[5] ^= 1;
+      return bytesEqual(s.publicKey, wallet.payPub) && verifyEd25519(wallet.payPub, msg, s.signature) && !verifyEd25519(wallet.payPub, msg, bad);
+    }],
+    ['mã hóa kho khóa', async () => {
+      const secret = utf8ToBytes('du-lieu-thu');
+      const box = await sealVault(secret, 'mat-khau-tu-kiem-tra', 'selftest');
+      const back = await openVault(box, 'mat-khau-tu-kiem-tra');
+      let rejected = false;
+      try { await openVault(box, 'mat-khau-sai-0000'); } catch { rejected = true; }
+      return bytesEqual(back, secret) && rejected;
+    }],
+    ['dựng và đọc giao dịch', () => {
+      const utxos = [{ txHash: 'ab'.repeat(32), index: 0, lovelace: 50000000n, assets: new Map() }];
+      const tx = buildUnsignedTx({ wallet, utxos, ttl: 300000000, payment: { addressBytes: parseAddress('addr1vx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzers66hrl8'), lovelace: 7000000n, assets: new Map() } });
+      const a = analyzeTxBody(tx.bodyBytes, wallet);
+      return a.sent.lovelace === 7000000n && a.external.length === 1 && a.sent.lovelace + a.change.lovelace + a.fee === 50000000n;
+    }],
+    ['mã QR', () => {
+      const frame = encodeFrames('P', wallet.accountXpub)[0];
+      const { modules } = generateQrMatrix(frame);
+      const text = decodeQrGrid(modules.map(r => Uint8Array.from(r, v => (v ? 1 : 0))));
+      const r = new FrameCollector('P').add(text);
+      return text === frame && r.done && bytesEqual(r.payload, wallet.accountXpub);
+    }]
+  ];
+  let failed = null;
+  for (const [name, fn] of checks) { failed = await step(name, fn); if (failed) break; }
+  if (acct) wipe(acct.accountXprv);
+  if (keys) wipe(keys.payXprv, keys.stakeXprv);
+  return failed;
+}
+
+// ---- hot/net.js ----
+// ============================================================================
+// hot/net.js — Truy vấn mạng Cardano qua Koios (API công khai, không cần khóa)
+//
+// Dữ liệu trả về từ máy chủ luôn bị coi là KHÔNG TIN CẬY: mọi trường đều được
+// kiểm tra định dạng. Máy chủ nói dối chỉ có thể làm giao dịch bị mạng từ chối,
+// không thể lấy tiền, vì ví lạnh tự kiểm tra nội dung trước khi ký.
+// ============================================================================
+
+
+
+const API = 'https://api.koios.rest/api/v1';
+const HEX = /^[0-9a-f]*$/;
+
+async function call(path, body) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    const res = await fetch(API + path, {
+      method: body ? 'POST' : 'GET',
+      headers: body ? { 'Content-Type': 'application/json', Accept: 'application/json' } : { Accept: 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: ctrl.signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer'
+    });
+    if (!res.ok) throw new Error(`Máy chủ Koios trả lỗi ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Hết thời gian chờ máy chủ. Hãy kiểm tra mạng.');
+    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra mạng.');
+    throw e;
+  } finally { clearTimeout(timer); }
+}
+
+const big = (v, max = 45000000000000000n) => {
+  if (typeof v !== 'string' && typeof v !== 'number') throw new Error('Dữ liệu máy chủ không hợp lệ');
+  const s = String(v);
+  if (!/^\d{1,20}$/.test(s)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+  const n = BigInt(s);
+  if (n > max) throw new Error('Dữ liệu máy chủ không hợp lệ');
+  return n;
+};
+
+async function fetchUtxos(address) {
+  const list = await call('/address_utxos', { _addresses: [address], _extended: true });
+  if (!Array.isArray(list) || list.length > 2000) throw new Error('Dữ liệu máy chủ không hợp lệ');
+  return list.map(u => {
+    const txHash = String(u.tx_hash || '').toLowerCase();
+    const index = Number(u.tx_index);
+    if (!/^[0-9a-f]{64}$/.test(txHash) || !Number.isInteger(index) || index < 0 || index > 65535) throw new Error('Dữ liệu máy chủ không hợp lệ');
+    if (u.address && u.address !== address) throw new Error('Máy chủ trả về UTXO của địa chỉ khác');
+    const assets = new Map();
+    for (const a of Array.isArray(u.asset_list) ? u.asset_list : []) {
+      const policy = String(a.policy_id || '').toLowerCase(), name = String(a.asset_name || '').toLowerCase();
+      if (policy.length !== 56 || !HEX.test(policy) || name.length > 64 || name.length % 2 || !HEX.test(name)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+      const key = `${policy}.${name}`;
+      assets.set(key, (assets.get(key) || 0n) + big(a.quantity, 18446744073709551615n));
+    }
+    return { txHash, index, lovelace: big(u.value), assets };
+  });
+}
+
+async function fetchAccount(stakeAddress) {
+  const list = await call('/account_info', { _stake_addresses: [stakeAddress] });
+  const a = Array.isArray(list) && list[0] ? list[0] : null;
+  if (!a) return { registered: false, pool: null, drep: null, rewards: 0n };
+  const str = (v, re) => (typeof v === 'string' && re.test(v) ? v : null);
+  return {
+    registered: a.status === 'registered',
+    pool: str(a.delegated_pool, /^pool1[0-9a-z]{20,80}$/),
+    drep: str(a.delegated_drep, /^drep[0-9a-z_]{5,90}$/),
+    rewards: a.rewards_available === null || a.rewards_available === undefined ? 0n : big(a.rewards_available)
+  };
+}
+
+async function fetchTipAndParams() {
+  const tip = await call('/tip');
+  const t = Array.isArray(tip) ? tip[0] : null;
+  const slot = t ? Number(t.abs_slot) : NaN, epoch = t ? Number(t.epoch_no) : NaN;
+  if (!Number.isInteger(slot) || slot < 100000000 || slot > 4000000000) throw new Error('Không đọc được trạng thái mạng');
+  let params = DEFAULT_PARAMS;
+  try {
+    const ep = await call(`/epoch_params?_epoch_no=${encodeURIComponent(epoch)}`);
+    const p = Array.isArray(ep) ? ep[0] : null;
+    if (p) {
+      const cand = {
+        minFeeA: big(p.min_fee_a), minFeeB: big(p.min_fee_b),
+        coinsPerUtxoByte: big(p.coins_per_utxo_size), keyDeposit: big(p.key_deposit)
+      };
+      // Chỉ nhận tham số trong khoảng hợp lý; ngoài khoảng thì dùng giá trị mặc định
+      const sane = cand.minFeeA >= 1n && cand.minFeeA <= 500n && cand.minFeeB <= 2000000n &&
+        cand.coinsPerUtxoByte >= 100n && cand.coinsPerUtxoByte <= 50000n && cand.keyDeposit >= 0n && cand.keyDeposit <= 10000000n;
+      if (sane) params = cand;
+    }
+  } catch { /* dùng tham số mặc định */ }
+  return { slot, params };
+}
+
+async function submitTx(signedTxBytes) {
+  const res = await fetch(API + '/submittx', {
+    method: 'POST', headers: { 'Content-Type': 'application/cbor' }, body: signedTxBytes,
+    cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer'
+  });
+  const text = (await res.text()).slice(0, 2000);
+  if (!res.ok) {
+    if (/All inputs are spent|BadInputsUTxO/.test(text)) throw new Error('Số dư của ví đã thay đổi (hoặc giao dịch này đã được gửi rồi). Hãy cập nhật số dư và tạo lại giao dịch.');
+    if (/OutsideValidityInterval/.test(text)) throw new Error('Giao dịch đã hết hạn. Hãy tạo lại và ký lại.');
+    if (/FeeTooSmall/.test(text)) throw new Error('Phí thấp hơn mức mạng yêu cầu. Hãy cập nhật số dư rồi tạo lại giao dịch.');
+    if (/ValueNotConserved/.test(text)) throw new Error('Số dư trên mạng không khớp với lúc tạo giao dịch. Hãy cập nhật số dư và tạo lại.');
+    throw new Error(`Mạng từ chối giao dịch (${res.status}): ${text.replace(/[^\x20-\x7E]/g, ' ').slice(0, 300)}`);
+  }
+  return text.replace(/[^0-9a-f]/gi, '').slice(0, 64).toLowerCase();
+}
+
+// ---- hot/hot.js ----
+// ============================================================================
+// VÍ NÓNG (iOS, trực tuyến) — chỉ giữ khóa CÔNG KHAI. Xem số dư, dựng giao dịch,
+// nhận chữ ký từ ví lạnh qua QR rồi gửi lên mạng. Không thể tự tiêu tiền.
+// ============================================================================
+
+
+
+
+
+
+
+const STORE_KEY = 'adagap.hot.v1';
+const TTL_SECONDS = 3 * 3600; // giao dịch có hiệu lực 3 giờ kể từ lúc tạo
+
+const root = document.getElementById('app');
+const state = { tab: 'wallet', sub: null, wallet: null, data: null, loading: false, error: null, flow: null, cleanup: null,
+  pay: { asset: 'ADA', to: '', amount: '', all: false }, stake: { pool: 'keep', poolCustom: '', drep: 'keep', drepCustom: '' } };
+
+// ---------------------------------------------------------------------------
+function loadWallet() {
+  try {
+    const r = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    return r && r.v === 1 && typeof r.xpub === 'string' ? walletFromXpub(b64ToBytes(r.xpub)) : null;
+  } catch { return null; }
+}
+function saveWallet(xpubBytes) {
+  const w = walletFromXpub(xpubBytes);
+  localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, xpub: bytesToB64(xpubBytes) }));
+  state.wallet = w; state.data = null;
+  return w;
+}
+
+async function refresh() {
+  if (state.loading) return;
+  state.loading = true; state.error = null; render();
+  try {
+    const [utxos, account] = await Promise.all([fetchUtxos(state.wallet.baseAddress), fetchAccount(state.wallet.stakeAddress)]);
+    state.data = { utxos, account, at: Date.now() };
+  } catch (e) { state.error = e.message; }
+  state.loading = false; render();
+}
+
+function totals() {
+  const t = { lovelace: 0n, night: 0n, others: 0 };
+  if (!state.data) return t;
+  const other = new Set();
+  for (const u of state.data.utxos) {
+    t.lovelace += u.lovelace;
+    for (const [k, q] of u.assets) { if (k === NIGHT_KEY) t.night += q; else other.add(k); }
+  }
+  t.others = other.size;
+  return t;
+}
+
+// ---------------------------------------------------------------------------
+function render() {
+  if (state.cleanup) { try { state.cleanup(); } catch { /* bỏ qua */ } state.cleanup = null; }
+  clear(root);
+  if (!state.wallet) { root.append(header('Ví nóng'), h('main', viewWelcome())); return; }
+  if (state.flow) { root.append(header(state.flow.title), h('main', viewFlow())); return; }
+  const titles = { wallet: 'Ví nóng', pay: 'Thanh toán', stake: 'Ủy quyền', backup: 'Sao lưu' };
+  const body = { wallet: viewWallet, pay: viewPay, stake: viewStake, backup: viewBackup }[state.tab]();
+  root.append(header(titles[state.tab]), h('main', body),
+    tabbar([{ id: 'wallet', icon: 'wallet', label: 'Ví' }, { id: 'pay', icon: 'send', label: 'Thanh toán' },
+      { id: 'stake', icon: 'stake', label: 'Ủy quyền' }, { id: 'backup', icon: 'backup', label: 'Sao lưu' }],
+      state.tab, id => { state.tab = id; state.sub = null; render(); }));
+}
+const header = title => h('header', h('h1', title), h('span.badge.live', 'Trực tuyến · Chỉ xem'));
+
+function busyButton(label, action, cls = 'primary') {
+  const btn = h('button.' + cls, { type: 'button' }, label);
+  btn.addEventListener('click', async () => {
+    if (btn.disabled) return;
+    btn.disabled = true; const old = btn.textContent; btn.textContent = 'Đang xử lý…';
+    try { await action(); } catch (e) { toast(e.message || 'Có lỗi xảy ra', true); }
+    if (btn.isConnected) { btn.disabled = false; btn.textContent = old; }
+  });
+  return btn;
+}
+
+// ---------------------------------------------------------------------------
+// Chưa ghép nối
+// ---------------------------------------------------------------------------
+function viewWelcome() {
+  if (state.sub === 'pair') {
+    const sc = scanner({
+      type: 'P',
+      onCancel: () => { state.sub = null; render(); },
+      onResult: payload => {
+        try { saveWallet(payload); toast('Đã ghép nối với ví lạnh.'); state.sub = null; refresh(); }
+        catch (e) { state.sub = null; toast(e.message, true); render(); }
+      }
+    });
+    state.cleanup = sc.stop;
+    return [h('section.card', h('h2', 'Quét mã ghép nối'), h('p', 'Trên ví lạnh: tab Ví → Ghép nối ví nóng.')), sc.el];
+  }
+  return [
+    h('section.card', h('h2', 'Chưa ghép nối ví lạnh'),
+      h('p', 'Ví nóng chỉ giữ khóa công khai để xem số dư và tạo giao dịch. Mọi giao dịch đều phải được ví lạnh ký.')),
+    h('button.primary', { type: 'button', onclick: () => { state.sub = 'pair'; render(); } }, icon('scan'), 'Quét QR ghép nối từ ví lạnh'),
+    busyButton('Khôi phục từ file sao lưu', restoreFromFile, 'secondary')
+  ];
+}
+
+async function restoreFromFile() {
+  const text = await pickTextFile();
+  if (text === null) return;
+  let j;
+  try { j = JSON.parse(text); } catch { throw new Error('Đây không phải file sao lưu của ví'); }
+  if (!j || j.type !== 'adagap-hot-backup' || j.v !== 1 || typeof j.xpub !== 'string') throw new Error('Đây không phải file sao lưu ví nóng');
+  saveWallet(b64ToBytes(j.xpub));
+  state.tab = 'wallet'; state.sub = null;
+  toast('Đã khôi phục ví nóng.');
+  refresh();
+}
+
+// ---------------------------------------------------------------------------
+// Tab Ví
+// ---------------------------------------------------------------------------
+function viewWallet() {
+  const w = state.wallet, t = totals();
+  if (state.sub === 'receive') {
+    const view = qrView([w.baseAddress], 'Địa chỉ nhận ADA và NIGHT');
+    return [h('section.card', h('h2', 'Nhận tiền'), view.el, h('p.mono', w.baseAddress),
+      h('button.secondary', { type: 'button', onclick: async () => {
+        try { await navigator.clipboard.writeText(w.baseAddress); toast('Đã sao chép địa chỉ.'); } catch { toast('Không sao chép được, hãy chép tay.', true); }
+      } }, 'Sao chép địa chỉ')),
+      h('button.ghost', { type: 'button', onclick: () => { state.sub = null; render(); } }, 'Đóng')];
+  }
+  const acct = state.data ? state.data.account : null;
+  const goTab = (tab) => () => { state.tab = tab; state.sub = null; render(); };
+  return [
+    h('section.balance', h('span', 'Số dư ADA'),
+      h('div.amount', state.data ? `${formatUnits(t.lovelace)} ADA` : state.loading ? 'Đang tải…' : '—'),
+      h('span', `${w.baseAddress.slice(0, 14)}…${w.baseAddress.slice(-8)} · khóa bí mật nằm ở ví lạnh`)),
+    state.error ? h('p.warn', icon('warn'), state.error) : null,
+    h('div.quick',
+      h('button', { type: 'button', onclick: goTab('pay') }, icon('send'), 'Thanh toán'),
+      h('button', { type: 'button', onclick: () => { state.sub = 'receive'; render(); } }, icon('backup'), 'Nhận'),
+      h('button', { type: 'button', onclick: goTab('stake') }, icon('stake'), 'Staking'),
+      h('button', { type: 'button', onclick: goTab('stake') }, icon('shield'), 'DRep')),
+    h('section', h('h3', 'TÀI SẢN'),
+      h('div.asset', h('span.coin.ada', 'ADA'), h('div', h('strong', 'Cardano')), h('strong', state.data ? formatUnits(t.lovelace) : '—')),
+      h('div.asset', h('span.coin.night', 'NIGHT'), h('div', h('strong', 'Midnight')), h('strong', state.data ? formatUnits(t.night, NIGHT.decimals) : '—')),
+      t.others ? h('p.hint', `Ví còn ${t.others} loại token khác (không hiển thị, vẫn được giữ nguyên khi giao dịch).`) : null),
+    acct ? h('section.card',
+      h('div.kv', h('span', 'Pool đang ủy quyền'), h('strong', acct.pool ? (knownPoolName(acct.pool) || `${acct.pool.slice(0, 14)}…`) : 'Chưa có')),
+      h('div.kv', h('span', 'DRep'), h('strong', acct.drep ? (knownDrepName(acct.drep) || drepLabel(acct.drep)) : 'Chưa có')),
+      h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`))) : null,
+    busyButton(state.loading ? 'Đang tải…' : 'Cập nhật số dư', refresh, 'secondary'),
+    state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null
+  ];
+}
+
+const drepLabel = d => ({ drep_always_abstain: 'Luôn bỏ phiếu trắng', drep_always_no_confidence: 'Luôn bất tín nhiệm' }[d] || `${d.slice(0, 14)}…`);
+
+// ---------------------------------------------------------------------------
+// Dựng giao dịch -> luồng ký qua QR
+// ---------------------------------------------------------------------------
+async function startFlow(title, makeArgs) {
+  // Luôn lấy UTXO, tham số và slot mới nhất ngay trước khi dựng
+  const [utxos, account, tip] = await Promise.all([
+    fetchUtxos(state.wallet.baseAddress), fetchAccount(state.wallet.stakeAddress), fetchTipAndParams()]);
+  state.data = { utxos, account, at: Date.now() };
+  const args = makeArgs({ account, params: tip.params });
+  const tx = buildUnsignedTx({ wallet: state.wallet, utxos, params: tip.params, ttl: tip.slot + TTL_SECONDS, ...args });
+  // Ví nóng đọc lại giao dịch bằng CHÍNH hàm mà ví lạnh dùng, để hai màn hình hiển thị giống nhau
+  const analysis = analyzeTxBody(tx.bodyBytes, state.wallet);
+  state.flow = { title, step: 'show', body: tx.bodyBytes, hash: tx.hash, witnessCount: tx.witnessCount, analysis };
+  render();
+}
+
+function summaryCard(a) {
+  const rows = [];
+  const tokens = m => [...m].map(([k, q]) => (k === NIGHT_KEY ? `${formatUnits(q, NIGHT.decimals)} NIGHT` : `${q} token khác`));
+  for (const o of a.external) {
+    rows.push(h('div.kv.col', h('span', 'Gửi đến'), h('strong.mono', o.address),
+      h('span', [o.lovelace > 0n ? `${formatUnits(o.lovelace)} ADA` : null, ...tokens(o.assets.map(x => [x.key, x.qty]))].filter(Boolean).join(' + '))));
+  }
+  for (const c of a.certs) {
+    if (c.pool) rows.push(h('div.kv.col', h('span', 'Ủy quyền staking cho pool'), h('strong', knownPoolName(c.pool) || 'Pool tự nhập'), h('span.mono', c.pool)));
+    if (c.drep) rows.push(h('div.kv.col', h('span', 'Ủy quyền biểu quyết (DRep)'), h('strong', knownDrepName(c.drep) || (c.drep.startsWith('drep1') ? 'DRep tự nhập' : c.drep)), c.drep.startsWith('drep1') ? h('span.mono', c.drep) : null));
+    if (c.deposit > 0n) rows.push(h('div.kv', h('span', 'Tiền cọc đăng ký (hoàn lại khi hủy)'), h('strong', `${formatUnits(c.deposit)} ADA`)));
+  }
+  if (a.withdrawal > 0n) rows.push(h('div.kv', h('span', 'Rút thưởng staking về ví'), h('strong', `+${formatUnits(a.withdrawal)} ADA`)));
+  rows.push(h('div.kv', h('span', 'Phí mạng'), h('strong', `${formatUnits(a.fee)} ADA`)));
+  rows.push(h('div.kv', h('span', 'Mã đối chiếu'), h('strong', bytesToHex(a.hash).slice(0, 8).toUpperCase())));
+  return h('section.card', rows);
+}
+
+function flowSteps(active) {
+  return h('ol.steps', ['Ví lạnh quét', 'Quét chữ ký', 'Gửi lên mạng'].map((t, i) =>
+    h('li' + (i < active ? '.done' : i === active ? '.active' : ''), `${i + 1} · ${t}`)));
+}
+
+function viewFlow() {
+  const f = state.flow;
+  const cancel = h('button.ghost', { type: 'button', onclick: () => { const done = f.step === 'done'; state.flow = null; if (done) refresh(); else render(); } }, f.step === 'done' ? 'Xong' : 'Hủy giao dịch');
+  if (f.step === 'show') {
+    const view = qrView(framesFor('U', f.body), 'Quét mã này bằng ví lạnh');
+    state.cleanup = view.stop;
+    return [flowSteps(0), h('section.card', view.el), summaryCard(f.analysis),
+      h('p.hint', 'Trên ví lạnh phải hiện đúng địa chỉ, số tiền và mã đối chiếu như trên. Giao dịch hết hạn sau 3 giờ.'),
+      h('button.primary', { type: 'button', onclick: () => { f.step = 'scan'; render(); } }, icon('scan'), 'Quét chữ ký từ ví lạnh'), cancel];
+  }
+  if (f.step === 'scan') {
+    const sc = scanner({
+      type: 'S',
+      onCancel: () => { f.step = 'show'; render(); },
+      onResult: payload => {
+        try {
+          const { hash, witnesses } = unpackSignatures(payload);
+          if (!bytesEqual(hash, f.hash)) throw new Error('Chữ ký này thuộc về một giao dịch khác');
+          if (witnesses.length !== f.witnessCount) throw new Error('Thiếu chữ ký cần thiết');
+          const expected = [state.wallet.payPub, state.wallet.stakePub];
+          witnesses.forEach((w, i) => {
+            if (!bytesEqual(w.vkey, expected[i]) || !verifyEd25519(expected[i], f.hash, w.sig)) throw new Error('Chữ ký không hợp lệ hoặc không phải của ví lạnh đã ghép nối');
+          });
+          f.signed = assembleSignedTx(f.body, witnesses);
+          f.step = 'confirm';
+        } catch (e) { f.step = 'show'; toast(e.message, true); }
+        render();
+      }
+    });
+    state.cleanup = sc.stop;
+    return [flowSteps(1), sc.el];
+  }
+  if (f.step === 'confirm') {
+    return [flowSteps(2), h('section.card.center', h('span.caps', 'CHỮ KÝ HỢP LỆ'), h('p', 'Giao dịch đã được ví lạnh ký. Bấm gửi để phát lên mạng Cardano.')),
+      summaryCard(f.analysis),
+      busyButton('Gửi giao dịch lên mạng', async () => {
+        const id = await submitTx(f.signed);
+        f.txId = id && id.length === 64 ? id : bytesToHex(f.hash);
+        f.step = 'done'; state.data = null; render();
+      }), cancel];
+  }
+  return [h('section.card.center', h('span.caps', 'ĐÃ GỬI'), h('p', 'Giao dịch đã được mạng tiếp nhận. Số dư sẽ cập nhật sau khoảng 1 phút.'),
+    h('p.mono', f.txId),
+    h('a', { href: `https://cardanoscan.io/transaction/${f.txId}`, target: '_blank', rel: 'noopener noreferrer' }, 'Xem trên Cardanoscan')), cancel];
+}
+
+// ---------------------------------------------------------------------------
+// Tab Thanh toán
+// ---------------------------------------------------------------------------
+function extractAddress(text) {
+  const m = /(addr1[0-9a-z]{50,120})/.exec(String(text).trim().toLowerCase());
+  if (!m) throw new Error('Mã QR không chứa địa chỉ Cardano (addr1…)');
+  parseAddress(m[1]);
+  return m[1];
+}
+
+function viewPay() {
+  const p = state.pay, t = totals();
+  if (state.sub === 'scanAddr') {
+    const sc = scanner({ accept: extractAddress, onCancel: () => { state.sub = null; render(); },
+      onResult: addr => { p.to = addr; state.sub = null; render(); } });
+    state.cleanup = sc.stop;
+    return [h('section.card', h('h2', 'Quét địa chỉ người nhận')), sc.el];
+  }
+  const isAda = p.asset === 'ADA';
+  const to = field('Người nhận', { type: 'text', placeholder: 'Dán địa chỉ addr1…', value: p.to });
+  const amount = field('Số tiền', { type: 'text', inputmode: 'decimal', placeholder: '0', value: p.amount });
+  to.input.addEventListener('input', () => { p.to = to.input.value; });
+  amount.input.addEventListener('input', () => { p.amount = amount.input.value; p.all = false; });
+  const available = isAda ? `${formatUnits(t.lovelace)} ADA` : `${formatUnits(t.night, NIGHT.decimals)} NIGHT`;
+  const seg = name => h('button' + (p.asset === name ? '.active' : ''), { type: 'button', 'aria-pressed': String(p.asset === name),
+    onclick: () => { p.asset = name; p.amount = ''; p.all = false; render(); } }, name);
+  return [
+    h('div.seg', { role: 'group', 'aria-label': 'Chọn tài sản' }, seg('ADA'), seg('NIGHT')),
+    h('section.card',
+      h('div.field', to.el.firstChild, h('div.inline', to.input,
+        h('button.secondary', { type: 'button', 'aria-label': 'Quét QR địa chỉ người nhận', onclick: () => { state.sub = 'scanAddr'; render(); } }, icon('scan')))),
+      h('div.field', amount.el.firstChild, h('div.inline', amount.input,
+        h('button.secondary.small', { type: 'button', onclick: () => {
+          if (!state.data) return toast('Hãy cập nhật số dư trước.', true);
+          if (isAda) { p.all = true; p.amount = 'Toàn bộ'; } else { p.amount = formatUnits(t.night, NIGHT.decimals).replace(/\./g, ''); }
+          render();
+        } }, 'Tối đa')),
+        h('p.hint', state.data ? `Khả dụng: ${available}` : 'Chưa tải số dư'))),
+    !isAda ? h('p.hint', 'Gửi NIGHT sẽ kèm khoảng 1,2 ADA theo quy định tối thiểu của mạng Cardano.') : null,
+    h('div.spacer'),
+    busyButton('Tạo mã QR cho ví lạnh', async () => {
+      const addressBytes = parseAddress(p.to);
+      if (bytesEqual(addressBytes, state.wallet.baseAddressBytes)) throw new Error('Đây là địa chỉ của chính ví này');
+      let payment;
+      if (isAda && p.all) payment = { addressBytes, lovelace: 0n, assets: new Map(), sendAll: true };
+      else {
+        const units = parseUnits(p.amount, isAda ? 6 : NIGHT.decimals);
+        if (units <= 0n) throw new Error('Hãy nhập số tiền lớn hơn 0');
+        payment = isAda ? { addressBytes, lovelace: units, assets: new Map() } : { addressBytes, lovelace: 0n, assets: new Map([[NIGHT_KEY, units]]) };
+      }
+      await startFlow('Thanh toán', () => ({ payment }));
+      state.pay = { asset: p.asset, to: '', amount: '', all: false };
+    })
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Tab Ủy quyền
+// ---------------------------------------------------------------------------
+function viewStake() {
+  const s = state.stake, acct = state.data ? state.data.account : null;
+  const choice = (group, id, title, sub) => h('div.choice' + (s[group] === id ? '.selected' : ''),
+    h('div', h('strong', title), sub ? h('span', sub) : null),
+    h('button.secondary', { type: 'button', 'aria-pressed': String(s[group] === id), onclick: () => { s[group] = id; render(); } }, s[group] === id ? 'Đã chọn' : 'Chọn'));
+  const poolCustom = field('Mã pool (pool1…)', { type: 'text', value: s.poolCustom });
+  poolCustom.input.addEventListener('input', () => { s.poolCustom = poolCustom.input.value; });
+  const drepCustom = field('Mã DRep (drep1…)', { type: 'text', value: s.drepCustom });
+  drepCustom.input.addEventListener('input', () => { s.drepCustom = drepCustom.input.value; });
+  const out = [
+    h('section', h('div.row', h('h2', 'Staking pool')),
+      h('p.hint', `Hiện tại: ${acct ? (acct.pool ? (knownPoolName(acct.pool) || acct.pool.slice(0, 16) + '…') : 'chưa ủy quyền') : 'chưa tải'}`),
+      h('div.card',
+        choice('pool', 'keep', 'Giữ nguyên'),
+        KNOWN_POOLS.map(p => choice('pool', p.id, p.ticker, p.name)),
+        choice('pool', 'custom', 'Pool khác', 'Nhập mã pool'),
+        s.pool === 'custom' ? poolCustom.el : null)),
+    h('section', h('div.row', h('h2', 'DRep (biểu quyết)')),
+      h('p.hint', `Hiện tại: ${acct ? (acct.drep ? (knownDrepName(acct.drep) || drepLabel(acct.drep)) : 'chưa ủy quyền') : 'chưa tải'}`),
+      h('div.card',
+        choice('drep', 'keep', 'Giữ nguyên'),
+        KNOWN_DREPS.map(d => choice('drep', d.id, `DRep ${d.name}`, `${d.id.slice(0, 18)}…`)),
+        choice('drep', 'abstain', 'Luôn bỏ phiếu trắng', 'Vẫn nhận thưởng staking'),
+        choice('drep', 'no_confidence', 'Luôn bất tín nhiệm'),
+        choice('drep', 'custom', 'DRep khác', 'Nhập mã DRep'),
+        s.drep === 'custom' ? drepCustom.el : null)),
+    busyButton('Tạo giao dịch ủy quyền', async () => {
+      const poolHash = s.pool === 'keep' ? null : parsePoolId(s.pool === 'custom' ? s.poolCustom : s.pool);
+      const drep = s.drep === 'keep' ? null : parseDrep(s.drep === 'custom' ? s.drepCustom : s.drep);
+      if (!poolHash && !drep) throw new Error('Hãy chọn pool hoặc DRep muốn ủy quyền');
+      await startFlow('Ủy quyền', ({ account, params }) => {
+        const c = delegationCert({ stakeHash: state.wallet.stakeHash, poolHash, drep, registered: account.registered, keyDeposit: params.keyDeposit });
+        return { certs: [c.cert], deposit: c.deposit };
+      });
+    }),
+    h('p.hint', 'Ủy quyền không chuyển tiền đi đâu cả. Lần đầu cần cọc 2 ADA (được hoàn khi hủy đăng ký). Mỗi lần ủy quyền đều cần ví lạnh ký.')
+  ];
+  if (acct && acct.rewards > 0n) {
+    out.push(h('section.card', h('h2', 'Thưởng staking'), h('p', `Đang có ${formatUnits(acct.rewards)} ADA chờ rút.`),
+      busyButton('Rút thưởng về ví', async () => {
+        await startFlow('Rút thưởng', ({ account }) => {
+          if (account.rewards <= 0n) throw new Error('Không còn thưởng để rút');
+          if (!account.drep) throw new Error('Mạng Cardano yêu cầu ủy quyền DRep trước khi rút thưởng. Hãy chọn một DRep ở trên.');
+          return { withdrawal: account.rewards };
+        });
+      }, 'secondary')));
+  }
+  if (!state.data) out.unshift(busyButton('Tải trạng thái ủy quyền', refresh, 'secondary'));
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Tab Sao lưu
+// ---------------------------------------------------------------------------
+function viewBackup() {
+  const last = localStorage.getItem('adagap.hot.lastBackup');
+  return [
+    h('section.card', h('h2', 'Sao lưu ví nóng'),
+      h('p', 'File chỉ chứa khóa công khai của ví (không chứa khóa bí mật, không tiêu được tiền). Ai có file này sẽ xem được số dư của bạn.'),
+      busyButton('Sao lưu — chọn nơi lưu file', async () => {
+        const name = `vi-nong-${state.wallet.baseAddress.slice(-6)}-${new Date().toISOString().slice(0, 10)}.json`;
+        const text = JSON.stringify({ type: 'adagap-hot-backup', v: 1, xpub: bytesToB64(state.wallet.accountXpub), address: state.wallet.baseAddress }, null, 1);
+        if (await saveTextFile(name, text)) { localStorage.setItem('adagap.hot.lastBackup', new Date().toISOString()); toast('Đã lưu file sao lưu.'); render(); }
+      }),
+      h('p.hint', last ? `Lần sao lưu gần nhất: ${new Date(last).toLocaleString('vi-VN')}` : 'Chưa sao lưu lần nào.')),
+    h('section.card', h('h2', 'Khôi phục ví nóng'), h('p', 'Từ file đã lưu, hoặc ghép nối lại bằng mã QR của ví lạnh.'),
+      busyButton('Chọn file sao lưu', restoreFromFile, 'secondary'),
+      h('button.secondary', { type: 'button', onclick: () => confirmDialog('Hủy ghép nối hiện tại để quét lại mã từ ví lạnh?', 'Hủy ghép nối', () => {
+        localStorage.removeItem(STORE_KEY); state.wallet = null; state.data = null; state.sub = 'pair'; render();
+      }) }, 'Ghép nối lại bằng QR'))
+  ];
+}
+
+// ---------------------------------------------------------------------------
+async function boot() {
+  if (!globalThis.crypto || !globalThis.crypto.subtle) {
+    root.append(h('div.gate', h('h1', 'Cần mở bằng HTTPS'), h('p', 'Ví nóng phải được mở qua địa chỉ https:// (hoặc đã thêm vào Màn hình chính từ địa chỉ https).')));
+    return;
+  }
+  const failed = await selfTest();
+  if (failed) {
+    root.append(h('div.gate', h('h1', 'Tự kiểm tra không đạt'), h('p', `Bước lỗi: ${failed}. Ví nóng từ chối chạy trên trình duyệt này. Hãy cập nhật iOS/Safari.`)));
+    return;
+  }
+  state.wallet = loadWallet();
+  render();
+  if (state.wallet) refresh();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+boot();
+
+})();
+</script>
+</body>
+</html>
