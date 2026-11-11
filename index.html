@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pZ1bxq0huzWU7teeBuoJPgHxFEn6stPdQgIY9OvrJ9M='; style-src 'sha256-6p/gIcyACQpNTNQ4SLFi6fnzDjuocajAI/TnXqcyLVw='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://api.koios.rest; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XIfrkeQihDifm415RSRBj1H8j1gl2c1b/xFnI0JU5ww='; style-src 'sha256-6p/gIcyACQpNTNQ4SLFi6fnzDjuocajAI/TnXqcyLVw='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://api.koios.rest; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F7">
@@ -2779,24 +2779,23 @@ async function selfTest() {
 const API = 'https://api.koios.rest/api/v1';
 const HEX = /^[0-9a-f]*$/;
 
-async function call(path, body) {
+// Mọi truy vấn đọc đều là GET "đơn giản" (không header riêng) để trình duyệt không phải hỏi trước máy chủ
+// (CORS preflight) — cách này tương thích rộng nhất, kể cả Safari trên iOS.
+async function call(path) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
-    const res = await fetch(API + path, {
-      method: body ? 'POST' : 'GET',
-      headers: body ? { 'Content-Type': 'application/json', Accept: 'application/json' } : { Accept: 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
-      signal: ctrl.signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer'
-    });
+    const res = await fetch(API + path, { signal: ctrl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
     if (!res.ok) throw new Error(`Máy chủ Koios trả lỗi ${res.status}`);
     return await res.json();
   } catch (e) {
     if (e.name === 'AbortError') throw new Error('Hết thời gian chờ máy chủ. Hãy kiểm tra mạng.');
-    if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Hãy kiểm tra mạng.');
+    if (e instanceof TypeError) throw new Error(`Không kết nối được máy chủ. Hãy kiểm tra mạng. (chi tiết: ${String(e.message).slice(0, 120)})`);
     throw e;
   } finally { clearTimeout(timer); }
 }
+
+const pgArray = v => encodeURIComponent(`{${v}}`);
 
 const big = (v, max = 45000000000000000n) => {
   if (typeof v !== 'string' && typeof v !== 'number') throw new Error('Dữ liệu máy chủ không hợp lệ');
@@ -2808,7 +2807,8 @@ const big = (v, max = 45000000000000000n) => {
 };
 
 async function fetchUtxos(address) {
-  const list = await call('/address_utxos', { _addresses: [address], _extended: true });
+  if (!/^addr1[0-9a-z]{50,110}$/.test(address)) throw new Error('Địa chỉ ví không hợp lệ');
+  const list = await call(`/address_utxos?_addresses=${pgArray(address)}&_extended=true`);
   if (!Array.isArray(list) || list.length > 2000) throw new Error('Dữ liệu máy chủ không hợp lệ');
   return list.map(u => {
     const txHash = String(u.tx_hash || '').toLowerCase();
@@ -2827,7 +2827,8 @@ async function fetchUtxos(address) {
 }
 
 async function fetchAccount(stakeAddress) {
-  const list = await call('/account_info', { _stake_addresses: [stakeAddress] });
+  if (!/^stake1[0-9a-z]{40,70}$/.test(stakeAddress)) throw new Error('Địa chỉ stake không hợp lệ');
+  const list = await call(`/account_info?_stake_addresses=${pgArray(stakeAddress)}`);
   const a = Array.isArray(list) && list[0] ? list[0] : null;
   if (!a) return { registered: false, pool: null, drep: null, rewards: 0n };
   const str = (v, re) => (typeof v === 'string' && re.test(v) ? v : null);
@@ -2863,10 +2864,13 @@ async function fetchTipAndParams() {
 }
 
 async function submitTx(signedTxBytes) {
-  const res = await fetch(API + '/submittx', {
+  let res;
+  try {
+  res = await fetch(API + '/submittx', {
     method: 'POST', headers: { 'Content-Type': 'application/cbor' }, body: signedTxBytes,
-    cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer'
+    credentials: 'omit', referrerPolicy: 'no-referrer'
   });
+  } catch (e) { throw new Error(`Không gửi được lên máy chủ. Giao dịch CHƯA được gửi, có thể thử lại. (chi tiết: ${String(e && e.message).slice(0, 120)})`); }
   const text = (await res.text()).slice(0, 2000);
   if (!res.ok) {
     if (/All inputs are spent|BadInputsUTxO/.test(text)) throw new Error('Số dư của ví đã thay đổi (hoặc giao dịch này đã được gửi rồi). Hãy cập nhật số dư và tạo lại giao dịch.');
@@ -3029,7 +3033,8 @@ function viewWallet() {
       h('div.kv', h('span', 'DRep'), h('strong', acct.drep ? (knownDrepName(acct.drep) || drepLabel(acct.drep)) : 'Chưa có')),
       h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`))) : null,
     busyButton(state.loading ? 'Đang tải…' : 'Cập nhật số dư', refresh, 'secondary'),
-    state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null
+    state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null,
+    h('p.hint', 'Phiên bản 2.2 · 2026-11-11 02:29 UTC')
   ];
 }
 
