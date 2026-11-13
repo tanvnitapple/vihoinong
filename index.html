@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WnPZaibstDv6t6B4Nx9GHi96Uz66r56LDHgDeYaJDdk='; style-src 'sha256-rGYYg/kGl3VboATgPvFamT8QazVVY/2ew2mVRz7uM1M='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MSQ8IOrQKkQkcPukpYtySK9XVkfrWoV2rhR99R/id0Y='; style-src 'sha256-4mHQDj8iUH+OytkbRZm7iXrtQ9cTpiSH50HzEbcoVWU='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F7">
@@ -138,6 +138,52 @@ details.tx.in .tx-amt{color:var(--ok)}
 .tx-time{grid-column:1/-1;font-size:12px;color:var(--muted)}
 .tx-body{padding:4px 0 12px;display:flex;flex-direction:column}
 details>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.stack{display:flex;flex-direction:column;gap:12px}
+[hidden]{display:none!important}
+label.check{display:flex;align-items:center;gap:12px;min-height:48px;font-size:15px;font-weight:600;cursor:pointer}
+label.check input{width:24px;height:24px;min-height:0;padding:0;flex:none;accent-color:var(--accent)}
+.card.tight{padding:4px 14px;gap:0}
+button.group{width:100%;justify-content:flex-start;gap:12px;min-height:60px;padding:8px 0;border:none;border-bottom:1px solid var(--line);border-radius:0;background:none;text-align:left}
+button.group:last-child{border-bottom:none}
+.dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex:none}
+button.group.active .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px var(--card)}
+.group-text{display:flex;flex-direction:column;min-width:0}
+.group-text span{font-size:13px;color:var(--muted);font-weight:400}
+select{appearance:auto}
+/* ---- Ví nóng 2.4: theo dõi số dư, nhật ký nạp/rút, gửi nhiều token ---- */
+details.feed{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 14px}
+details.feed>summary{list-style:none;cursor:pointer;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;font-size:16px}
+details.feed>summary::-webkit-details-marker{display:none}
+details.feed>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 6px 4px 0;flex:none}
+details.feed[open]>summary::after{transform:rotate(-135deg);margin:4px 6px 0 0}
+details.feed>.hint,details.feed>.warn,details.feed>button{margin:0 0 12px}
+.new-dot{background:var(--accent);color:var(--on-accent);border-radius:999px;font-size:12px;font-weight:700;padding:2px 8px;margin-left:8px}
+.feed-row{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.feed-row strong.up{color:var(--ok)}
+.feed-row span{font-size:12px;color:var(--muted)}
+.mon{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.mon i{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+.mon.off i{background:var(--line2)}
+.mon.err i{background:var(--bad)}
+.seg.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.seg.four button{font-size:14px;padding:0 4px}
+.tokrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.tokrow:last-of-type{border-bottom:none}
+.tokrow>select{grid-column:1}
+.tokrow>button{grid-column:2}
+.tokrow>.inline,.tokrow>.hint{grid-column:1/-1}
+.tokrow.solo>select{grid-column:1/-1}
+.tokrow>.hint{margin:0}
+.dayhead{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);margin:14px 0 4px;text-transform:uppercase}
+.sum2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum2>div{display:flex;flex-direction:column;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.sum2 span{font-size:12px;color:var(--muted)}
+.sum2 strong{font-size:15px;overflow-wrap:anywhere}
+.sum2 .in strong{color:var(--ok)}
+.total-line{display:flex;flex-direction:column;gap:2px;padding:0 0 10px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.total-line strong{font-size:20px}
+.total-line span{font-size:13px;color:var(--muted)}
+.pre{white-space:pre-line}
 </style>
 </head>
 <body class="hot">
@@ -906,7 +952,7 @@ function mnemonicToEntropy(mnemonic) {
 // 7. Cardano Icarus Root Key & CIP-1852 Derivation (`m/1852'/1815'/0'`)
 // ----------------------------------------------------------------------------
 function deriveRootXprvFromEntropy(entropyBytes, passphrase = '') {
-  const passBytes = utf8ToBytes(passphrase);
+  const passBytes = utf8ToBytes(String(passphrase).normalize('NFKD'));
   const xprv = pbkdf2Sha512(passBytes, entropyBytes, 4096, 96);
   // Icarus tweakBits on kL (first 32 bytes)
   xprv[0] &= 0b11111000;
@@ -1143,10 +1189,15 @@ function subtleOrThrow() {
   return s;
 }
 
-/** Khóa gốc Icarus: PBKDF2-HMAC-SHA512(pass="", salt=entropy, 4096, 96) bằng WebCrypto gốc. */
-async function deriveRootXprv(entropyBytes) {
+/**
+ * Khóa gốc Icarus (CIP-3): PBKDF2-HMAC-SHA512(mật khẩu = "mật khẩu seed", salt = entropy, 4096 vòng, 96 byte).
+ * "Mật khẩu seed" (BIP-39 passphrase, còn gọi là từ thứ 25) để trống thì cho ví chuẩn như Lace/Eternl.
+ * Có mật khẩu seed thì cùng 24 từ sẽ ra một ví HOÀN TOÀN KHÁC — lộ 24 từ vẫn chưa mở được ví.
+ */
+async function deriveRootXprv(entropyBytes, passphrase = '') {
   const subtle = subtleOrThrow();
-  const key = await subtle.importKey('raw', new Uint8Array(0), 'PBKDF2', false, ['deriveBits']).catch(() => null);
+  const passBytes = utf8ToBytes(String(passphrase).normalize('NFKD'));
+  const key = await subtle.importKey('raw', passBytes, 'PBKDF2', false, ['deriveBits']).catch(() => null);
   let xprv;
   if (key) {
     const bits = await subtle.deriveBits(
@@ -1154,22 +1205,31 @@ async function deriveRootXprv(entropyBytes) {
     xprv = new Uint8Array(bits);
   } else {
     // Một số trình duyệt không cho nhập khóa rỗng: dùng bản thuần JS (đã đối chiếu, chỉ chậm hơn).
-    xprv = pbkdf2Sha512(new Uint8Array(0), entropyBytes, 4096, 96);
+    xprv = pbkdf2Sha512(passBytes, entropyBytes, 4096, 96);
   }
+  wipe(passBytes);
   xprv[0] &= 0b11111000;
   xprv[31] &= 0b00011111;
   xprv[31] |= 0b01000000;
   return xprv;
 }
 
-/** m/1852'/1815'/0' — trả về khóa tài khoản (96 byte) và xpub (64 byte). */
-async function deriveAccountFromEntropy(entropyBytes) {
-  const root = await deriveRootXprv(entropyBytes);
+/** m/1852'/1815'/index' — khóa của một tài khoản (nhóm địa chỉ) từ khóa gốc. */
+function deriveAccountFromRoot(root, index = 0) {
+  if (!Number.isInteger(index) || index < 0 || index > 1000) throw new Error('Số thứ tự tài khoản không hợp lệ');
   const purpose = deriveChildXprv(root, 1852 + HARDENED);
   const coin = deriveChildXprv(purpose, 1815 + HARDENED);
-  const accountXprv = deriveChildXprv(coin, 0 + HARDENED);
-  wipe(root, purpose, coin);
+  const accountXprv = deriveChildXprv(coin, index + HARDENED);
+  wipe(purpose, coin);
   return { accountXprv, accountXpub: xprvToXpub(accountXprv) };
+}
+
+/** Tiện ích: từ entropy (+ mật khẩu seed) ra thẳng khóa tài khoản. */
+async function deriveAccountFromEntropy(entropyBytes, passphrase = '', index = 0) {
+  const root = await deriveRootXprv(entropyBytes, passphrase);
+  const out = deriveAccountFromRoot(root, index);
+  wipe(root);
+  return out;
 }
 
 /** Khóa ký: thanh toán m/…/0/0 và stake m/…/2/0. Người gọi phải wipe() sau khi dùng. */
@@ -1303,6 +1363,19 @@ function formatUnits(value, decimals = 6) {
   let frac = (abs % base).toString().padStart(decimals, '0').replace(/0+$/, '');
   if (frac.length < 2) frac = frac.padEnd(2, '0');
   return `${neg ? '-' : ''}${whole},${frac}`;
+}
+
+/** Tên hiển thị của một token (`policy.nameHex`). Tên chỉ là chữ do người phát hành tự đặt nên LUÔN kèm đầu mã policy. */
+function assetLabel(key) {
+  if (key === NIGHT_KEY) return 'NIGHT';
+  const [policy = '', nameHex = ''] = String(key).split('.');
+  let name = '';
+  if (nameHex.length && nameHex.length % 2 === 0 && /^[0-9a-f]+$/.test(nameHex)) {
+    const codes = nameHex.match(/../g).map(x => parseInt(x, 16));
+    if (codes.every(c => c >= 0x21 && c <= 0x7e)) name = String.fromCharCode(...codes).slice(0, 32);
+  }
+  const short = `${policy.slice(0, 6)}…`;
+  return name ? `${name} (${short})` : `${short}${nameHex ? '.' + nameHex.slice(0, 8) : ''}`;
 }
 
 // ----------------------------------------------------------------------------
@@ -2654,7 +2727,7 @@ function scanner({ type = null, accept = null, onResult, onCancel }) {
 }
 
 /** Lưu file văn bản và cho người dùng CHỌN nơi lưu. Trả về true nếu đã lưu. */
-async function saveTextFile(name, text) {
+async function saveTextFile(name, text, mime = 'application/json') {
   const native = globalThis.AirGapNative;
   if (native && native.saveFile) {
     return new Promise(resolve => {
@@ -2664,13 +2737,13 @@ async function saveTextFile(name, text) {
   }
   if (globalThis.showSaveFilePicker) {
     try {
-      const fh = await globalThis.showSaveFilePicker({ suggestedName: name, types: [{ description: 'File sao lưu ví', accept: { 'application/json': ['.json'] } }] });
+      const fh = await globalThis.showSaveFilePicker({ suggestedName: name, types: [{ description: 'File của ví', accept: { [mime]: [name.slice(name.lastIndexOf('.'))] } }] });
       const w = await fh.createWritable();
       await w.write(text); await w.close();
       return true;
     } catch (e) { if (e && e.name === 'AbortError') return false; }
   }
-  const file = new File([text], name, { type: 'application/json' });
+  const file = new File([text], name, { type: mime });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     // iOS: bảng chia sẻ có mục "Lưu vào Tệp" để chọn thư mục
     try { await navigator.share({ files: [file] }); return true; } catch (e) { if (e && e.name === 'AbortError') return false; }
@@ -2875,9 +2948,11 @@ async function fetchAccount(stakeAddress) {
 }
 
 const NIGHT_UNIT = '0691b2fecca1ac4f53cb6dfb00b7013e561d1f34403b957cbb5af1fa4e49474854';
+const txCache = new Map(); // giao dịch đã xác nhận thì không đổi nữa nên giữ lại, đỡ tốn hạn mức Blockfrost
 
 /**
- * Lịch sử giao dịch của địa chỉ (mới nhất trước). Mỗi mục đã tính sẵn số tiền ròng vào/ra của ví.
+ * Lịch sử giao dịch của địa chỉ (mới nhất trước). Mỗi mục đã tính sẵn số tiền ròng vào/ra của ví,
+ * gồm ADA và MỌI loại token (netAssets: khóa `policy.nameHex` → số đơn vị gốc, có dấu).
  * @returns {Promise<{items: Array, more: boolean}>}
  */
 async function fetchHistory(address, page = 1, count = 10) {
@@ -2886,18 +2961,22 @@ async function fetchHistory(address, page = 1, count = 10) {
   if (list === null) return { items: [], more: false };
   if (!Array.isArray(list)) throw new Error('Dữ liệu máy chủ không hợp lệ');
   const sumOf = entries => {
-    let lovelace = 0n, night = 0n, other = false;
+    let lovelace = 0n; const assets = new Map();
     for (const e of entries) for (const a of Array.isArray(e.amount) ? e.amount : []) {
-      if (a.unit === 'lovelace') lovelace += big(a.quantity);
-      else if (a.unit === NIGHT_UNIT) night += big(a.quantity, 18446744073709551615n);
-      else other = true;
+      const unit = String(a.unit || '').toLowerCase();
+      if (unit === 'lovelace') { lovelace += big(a.quantity); continue; }
+      if (unit.length < 56 || unit.length > 120 || unit.length % 2 || !HEX.test(unit)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+      const key = `${unit.slice(0, 56)}.${unit.slice(56)}`;
+      assets.set(key, (assets.get(key) || 0n) + big(a.quantity, 18446744073709551615n));
     }
-    return { lovelace, night, other };
+    return { lovelace, assets };
   };
   const addrText = v => (typeof v === 'string' && /^[0-9A-Za-z_]{20,130}$/.test(v) ? v : '(địa chỉ không đọc được)');
   const one = async row => {
     const txHash = String(row.tx_hash || '').toLowerCase();
     if (!/^[0-9a-f]{64}$/.test(txHash)) throw new Error('Dữ liệu máy chủ không hợp lệ');
+    const ck = address + '|' + txHash;
+    if (txCache.has(ck)) return txCache.get(ck);
     const [u, t] = await Promise.all([call(`/txs/${txHash}/utxos`), call(`/txs/${txHash}`)]);
     if (!u || !Array.isArray(u.inputs) || !Array.isArray(u.outputs) || !t) throw new Error('Dữ liệu máy chủ không hợp lệ');
     const ins = u.inputs.filter(i => !i.collateral && !i.reference), outs = u.outputs.filter(o => !o.collateral);
@@ -2913,10 +2992,17 @@ async function fetchHistory(address, page = 1, count = 10) {
     else kind = 'self';
     const parties = kind === 'receive'
       ? [...new Set(ins.map(i => addrText(i.address)))].slice(0, 3).map(address => ({ address }))
-      : external.slice(0, 5).map(o => { const v = sumOf([o]); return { address: addrText(o.address), lovelace: v.lovelace, night: v.night, other: v.other }; });
+      : external.slice(0, 5).map(o => { const v = sumOf([o]); return { address: addrText(o.address), lovelace: v.lovelace, assets: v.assets }; });
+    const netAssets = new Map();
+    for (const k of new Set([...a.assets.keys(), ...b.assets.keys()])) {
+      const d = (b.assets.get(k) || 0n) - (a.assets.get(k) || 0n);
+      if (d !== 0n) netAssets.set(k, d);
+    }
     const time = Number(row.block_time);
-    return { txHash, time: Number.isFinite(time) ? time : 0, kind, fee, deposit,
-      netLovelace: b.lovelace - a.lovelace, netNight: b.night - a.night, other: a.other || b.other, parties };
+    const item = { txHash, time: Number.isFinite(time) ? time : 0, kind, fee, deposit,
+      netLovelace: b.lovelace - a.lovelace, netAssets, parties };
+    txCache.set(ck, item);
+    return item;
   };
   const items = [];
   for (let i = 0; i < list.length; i += 4) items.push(...await Promise.all(list.slice(i, i + 4).map(one)));
@@ -2983,45 +3069,167 @@ const KEY_STORE = 'adagap.hot.blockfrost';
 const TTL_SECONDS = 3 * 3600; // giao dịch có hiệu lực 3 giờ kể từ lúc tạo
 
 const root = document.getElementById('app');
-const state = { key: '', history: null, historyOpen: false, openTx: new Set(), tab: 'wallet', sub: null, wallet: null, data: null, loading: false, error: null, flow: null, cleanup: null,
-  pay: { asset: 'ADA', to: '', amount: '', all: false }, stake: { pool: 'keep', poolCustom: '', drep: 'keep', drepCustom: '' } };
+const MON_KEY = 'adagap.hot.monitor';
+const state = { groups: [], activeGroup: 0, key: '', history: null, historyOpen: false, openTx: new Set(), tab: 'wallet', sub: null, wallet: null, data: null, loading: false, error: null, flow: null, cleanup: null,
+  all: new Map(),            // xpub của nhóm -> số dư mới nhất của nhóm đó (để xem tất cả nhóm cùng lúc)
+  feed: [], unread: 0, feedOpen: false, logFilter: 'all',
+  pay: { to: '', lines: [{ asset: 'ADA', amount: '', all: false }] }, stake: { pool: 'keep', poolCustom: '', drep: 'keep', drepCustom: '' } };
 
 // ---------------------------------------------------------------------------
-function loadWallet() {
+// Ví nóng giữ danh sách NHÓM (mỗi nhóm = một tài khoản của ví lạnh, chỉ có khóa công khai).
+const MAX_GROUPS = 20;
+const cleanName = v => String(v).replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 24);
+
+function loadGroups() {
   try {
     const r = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-    return r && r.v === 1 && typeof r.xpub === 'string' ? walletFromXpub(b64ToBytes(r.xpub)) : null;
-  } catch { return null; }
+    let groups = [], active = 0;
+    if (r && r.v === 1 && typeof r.xpub === 'string') groups = [{ xpub: r.xpub, name: 'Ví chính' }];
+    else if (r && r.v === 2 && Array.isArray(r.groups)) { groups = r.groups.slice(0, MAX_GROUPS).map(g => ({ xpub: String(g.xpub), name: cleanName(g.name) || 'Nhóm' })); active = Number(r.active) || 0; }
+    groups.forEach(g => walletFromXpub(b64ToBytes(g.xpub)));
+    state.groups = groups;
+    state.activeGroup = active >= 0 && active < groups.length ? active : 0;
+  } catch { state.groups = []; state.activeGroup = 0; }
+  state.wallet = state.groups.length ? walletFromXpub(b64ToBytes(state.groups[state.activeGroup].xpub)) : null;
 }
-function saveWallet(xpubBytes) {
-  const w = walletFromXpub(xpubBytes);
-  localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, xpub: bytesToB64(xpubBytes) }));
-  state.wallet = w; state.data = null; state.history = null; state.openTx = new Set();
-  return w;
+function persistGroups() {
+  if (!state.groups.length) localStorage.removeItem(STORE_KEY);
+  else localStorage.setItem(STORE_KEY, JSON.stringify({ v: 2, groups: state.groups, active: state.activeGroup }));
 }
+function selectGroup(i) {
+  state.activeGroup = i;
+  state.wallet = state.groups.length ? walletOf(state.groups[i]) : null;
+  state.data = state.groups.length ? (state.all.get(state.groups[i].xpub) || null) : null; state.history = null; state.openTx = new Set(); state.error = null;
+  persistGroups();
+}
+/** Nhận mã ghép nối: 64 byte khóa công khai + tên nhóm (UTF-8). Nhóm đã có thì chỉ cập nhật tên. */
+function addGroupFromPairing(payload) {
+  if (!(payload instanceof Uint8Array) || payload.length < 64 || payload.length > 64 + 96) throw new Error('Mã ghép nối không hợp lệ');
+  const xpubBytes = payload.slice(0, 64);
+  walletFromXpub(xpubBytes);
+  let name = '';
+  try { name = cleanName(bytesToUtf8(payload.slice(64))); } catch { name = ''; }
+  const xpub = bytesToB64(xpubBytes);
+  const at = state.groups.findIndex(g => g.xpub === xpub);
+  if (at >= 0) { if (name) state.groups[at].name = name; selectGroup(at); return state.groups[at].name; }
+  if (state.groups.length >= MAX_GROUPS) throw new Error(`Tối đa ${MAX_GROUPS} nhóm`);
+  state.groups.push({ xpub, name: name || (state.groups.length ? `Nhóm ${state.groups.length + 1}` : 'Ví chính') });
+  selectGroup(state.groups.length - 1);
+  return state.groups[state.groups.length - 1].name;
+}
+const walletCache = new Map();
+const walletOf = g => { let w = walletCache.get(g.xpub); if (!w) { w = walletFromXpub(b64ToBytes(g.xpub)); walletCache.set(g.xpub, w); } return w; };
+const activeGroup = () => state.groups[state.activeGroup] || null;
+const groupName = () => (state.groups[state.activeGroup] ? state.groups[state.activeGroup].name : '');
 
 async function refresh() {
   if (state.loading) return;
   if (!state.key) { render(); return; }
   state.loading = true; state.error = null; render();
   try {
+    const g = activeGroup();
     const [utxos, account] = await Promise.all([fetchUtxos(state.wallet.baseAddress), fetchAccount(state.wallet.stakeAddress)]);
-    state.data = { utxos, account, at: Date.now() };
+    record(g, { utxos, account, at: Date.now() });
     state.history = null;
   } catch (e) { state.error = e.message; }
   state.loading = false; render();
-  if (state.historyOpen && !state.history) loadHistory();
+  if ((state.historyOpen || state.tab === 'log') && !state.history) loadHistory();
 }
 
-function totals() {
-  const t = { lovelace: 0n, night: 0n, others: 0 };
-  if (!state.data) return t;
-  const other = new Set();
-  for (const u of state.data.utxos) {
+// ---------------------------------------------------------------------------
+// Số dư của từng nhóm + phát hiện biến động
+// ---------------------------------------------------------------------------
+function snapshot(d) {
+  const m = new Map([['lovelace', 0n]]);
+  for (const u of d.utxos) { m.set('lovelace', m.get('lovelace') + u.lovelace); for (const [k, q] of u.assets) m.set(k, (m.get(k) || 0n) + q); }
+  m.set('rewards', d.account.rewards);
+  return m;
+}
+function describeChange(prev, next) {
+  const out = [];
+  for (const k of new Set([...prev.keys(), ...next.keys()])) { const d = (next.get(k) || 0n) - (prev.get(k) || 0n); if (d !== 0n) out.push({ k, d }); }
+  return out;
+}
+function fmtDelta({ k, d }) {
+  const a = d < 0n ? -d : d, sign = d < 0n ? '−' : '+';
+  if (k === 'lovelace') return `${sign}${formatUnits(a)} ADA`;
+  if (k === 'rewards') return `${sign}${formatUnits(a)} ADA thưởng staking`;
+  if (k === NIGHT_KEY) return `${sign}${formatUnits(a, NIGHT.decimals)} NIGHT`;
+  return `${sign}${a} ${assetLabel(k)}`;
+}
+/** Lưu số dư mới của một nhóm; nếu khác lần trước thì ghi vào "Biến động" và báo cho người dùng. Trả về true nếu có biến động. */
+function record(group, data) {
+  data.snap = snapshot(data);
+  const prev = state.all.get(group.xpub);
+  state.all.set(group.xpub, data);
+  const cur = activeGroup();
+  if (cur && cur.xpub === group.xpub) state.data = data;
+  if (!prev) return false;
+  const ch = describeChange(prev.snap, data.snap);
+  if (!ch.length) return false;
+  const text = ch.map(fmtDelta).join(' · ');
+  const main = ch.find(c => c.k !== 'rewards');
+  state.feed.unshift({ at: Date.now(), group: group.name, text, up: main ? main.d > 0n : true });
+  if (state.feed.length > 30) state.feed.length = 30;
+  state.unread += 1;
+  if (cur && cur.xpub === group.xpub) state.history = null; // lịch sử cũ không còn đủ
+  toast(`«${group.name}»: ${text}`);
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Theo dõi số dư trực tuyến: hỏi Blockfrost định kỳ khi ứng dụng đang mở trên màn hình
+// ---------------------------------------------------------------------------
+const mon = { on: true, timer: null, busy: false, fails: 0, last: 0, error: null };
+const monDelay = () => Math.min(Math.max(30000, state.groups.length * 10000) * 2 ** mon.fails, 600000);
+function paintMon() {
+  const el = document.getElementById('mon-status'); if (!el) return;
+  const cls = !mon.on ? 'off' : mon.error ? 'err' : '';
+  el.className = 'mon' + (cls ? ' ' + cls : '');
+  el.lastChild.textContent = !mon.on ? 'Đã tắt theo dõi tự động'
+    : mon.error ? `Theo dõi gặp lỗi: ${mon.error}`
+    : mon.last ? `Đang theo dõi · kiểm tra lúc ${new Date(mon.last).toLocaleTimeString('vi-VN')}` : 'Đang theo dõi…';
+}
+async function pollOnce() {
+  if (!mon.on || !state.key || !state.groups.length || document.hidden || state.flow || state.loading || mon.busy) return;
+  mon.busy = true;
+  let changed = false;
+  try {
+    for (const g of state.groups.slice()) {
+      if (state.flow) break;
+      const first = !state.all.has(g.xpub);
+      const w = walletOf(g);
+      const [utxos, account] = await Promise.all([fetchUtxos(w.baseAddress), fetchAccount(w.stakeAddress)]);
+      if (record(g, { utxos, account, at: Date.now() }) || first) changed = true;
+    }
+    mon.fails = 0; mon.error = null;
+  } catch (e) { mon.fails = Math.min(mon.fails + 1, 5); mon.error = e.message; }
+  mon.busy = false; mon.last = Date.now();
+  if (changed && !state.flow && !state.sub && (state.tab === 'wallet' || state.tab === 'log')) {
+    render();
+    if ((state.historyOpen || state.tab === 'log') && !state.history) loadHistory();
+  } else paintMon();
+}
+function monSchedule() {
+  clearTimeout(mon.timer); mon.timer = null;
+  if (!mon.on) return;
+  mon.timer = setTimeout(async () => { await pollOnce(); monSchedule(); }, monDelay());
+}
+function setMonitor(on) {
+  mon.on = on; mon.fails = 0; mon.error = null;
+  try { localStorage.setItem(MON_KEY, on ? '1' : '0'); } catch { /* không lưu được thì thôi */ }
+  monSchedule(); paintMon();
+  if (on) pollOnce();
+}
+
+function totals(d = state.data) {
+  const t = { lovelace: 0n, night: 0n, assets: new Map(), others: 0 };   // assets: mọi token trừ NIGHT
+  if (!d) return t;
+  for (const u of d.utxos) {
     t.lovelace += u.lovelace;
-    for (const [k, q] of u.assets) { if (k === NIGHT_KEY) t.night += q; else other.add(k); }
+    for (const [k, q] of u.assets) { if (k === NIGHT_KEY) t.night += q; else t.assets.set(k, (t.assets.get(k) || 0n) + q); }
   }
-  t.others = other.size;
+  t.others = t.assets.size;
   return t;
 }
 
@@ -3031,12 +3239,13 @@ function render() {
   clear(root);
   if (!state.wallet) { root.append(header('Ví nóng'), h('main', viewWelcome())); return; }
   if (state.flow) { root.append(header(state.flow.title), h('main', viewFlow())); return; }
-  const titles = { wallet: 'Ví nóng', pay: 'Thanh toán', stake: 'Ủy quyền', backup: 'Sao lưu' };
-  const body = { wallet: viewWallet, pay: viewPay, stake: viewStake, backup: viewBackup }[state.tab]();
+  const titles = { wallet: 'Ví nóng', pay: 'Thanh toán', stake: 'Ủy quyền', log: 'Nhật ký nạp / rút', backup: 'Sao lưu' };
+  const body = { wallet: viewWallet, pay: viewPay, stake: viewStake, log: viewLog, backup: viewBackup }[state.tab]();
   root.append(header(titles[state.tab]), h('main', body),
     tabbar([{ id: 'wallet', icon: 'wallet', label: 'Ví' }, { id: 'pay', icon: 'send', label: 'Thanh toán' },
-      { id: 'stake', icon: 'stake', label: 'Ủy quyền' }, { id: 'backup', icon: 'backup', label: 'Sao lưu' }],
-      state.tab, id => { state.tab = id; state.sub = null; render(); }));
+      { id: 'stake', icon: 'stake', label: 'Ủy quyền' }, { id: 'log', icon: 'backup', label: 'Nhật ký' }, { id: 'backup', icon: 'backup', label: 'Sao lưu' }],
+      state.tab, id => { state.tab = id; state.sub = null; render(); if (id === 'log' && state.key && state.wallet && !state.history) loadHistory(); }));
+  paintMon();
 }
 const header = title => h('header', h('h1', title), h('span.badge.live', 'Trực tuyến · Chỉ xem'));
 
@@ -3054,19 +3263,21 @@ function busyButton(label, action, cls = 'primary') {
 // ---------------------------------------------------------------------------
 // Chưa ghép nối
 // ---------------------------------------------------------------------------
+function viewPairScan() {
+  const sc = scanner({
+    type: 'P',
+    onCancel: () => { state.sub = null; render(); },
+    onResult: payload => {
+      try { const name = addGroupFromPairing(payload); toast(`Đã ghép nối nhóm «${name}».`); state.sub = null; state.tab = 'wallet'; refresh(); }
+      catch (e) { state.sub = null; toast(e.message, true); render(); }
+    }
+  });
+  state.cleanup = sc.stop;
+  return [h('section.card', h('h2', 'Quét mã ghép nối'), h('p', 'Trên ví lạnh: tab Ví → chọn nhóm → Ghép nối ví nóng.')), sc.el];
+}
+
 function viewWelcome() {
-  if (state.sub === 'pair') {
-    const sc = scanner({
-      type: 'P',
-      onCancel: () => { state.sub = null; render(); },
-      onResult: payload => {
-        try { saveWallet(payload); toast('Đã ghép nối với ví lạnh.'); state.sub = null; refresh(); }
-        catch (e) { state.sub = null; toast(e.message, true); render(); }
-      }
-    });
-    state.cleanup = sc.stop;
-    return [h('section.card', h('h2', 'Quét mã ghép nối'), h('p', 'Trên ví lạnh: tab Ví → Ghép nối ví nóng.')), sc.el];
-  }
+  if (state.sub === 'pair') return viewPairScan();
   return [
     h('section.card', h('h2', 'Chưa ghép nối ví lạnh'),
       h('p', 'Ví nóng chỉ giữ khóa công khai để xem số dư và tạo giao dịch. Mọi giao dịch đều phải được ví lạnh ký.')),
@@ -3080,8 +3291,14 @@ async function restoreFromFile() {
   if (text === null) return;
   let j;
   try { j = JSON.parse(text); } catch { throw new Error('Đây không phải file sao lưu của ví'); }
-  if (!j || j.type !== 'adagap-hot-backup' || j.v !== 1 || typeof j.xpub !== 'string') throw new Error('Đây không phải file sao lưu ví nóng');
-  saveWallet(b64ToBytes(j.xpub));
+  if (!j || j.type !== 'adagap-hot-backup') throw new Error('Đây không phải file sao lưu ví nóng');
+  let groups;
+  if (j.v === 1 && typeof j.xpub === 'string') groups = [{ xpub: j.xpub, name: 'Ví chính' }];
+  else if (j.v === 2 && Array.isArray(j.groups) && j.groups.length >= 1 && j.groups.length <= MAX_GROUPS) groups = j.groups.map(g => ({ xpub: String(g && g.xpub), name: cleanName(g && g.name) || 'Nhóm' }));
+  else throw new Error('File sao lưu ví nóng sai định dạng');
+  groups.forEach(g => walletFromXpub(b64ToBytes(g.xpub)));
+  state.all.clear(); state.feed = []; state.unread = 0;
+  state.groups = groups; selectGroup(0);
   state.tab = 'wallet'; state.sub = null;
   toast('Đã khôi phục ví nóng.');
   refresh();
@@ -3113,6 +3330,7 @@ function viewKeySetup() {
 }
 
 function viewWallet() {
+  if (state.sub === 'pair') return viewPairScan();
   if (!state.key || state.sub === 'key') return viewKeySetup();
   const w = state.wallet, t = totals();
   if (state.sub === 'receive') {
@@ -3125,8 +3343,11 @@ function viewWallet() {
   }
   const acct = state.data ? state.data.account : null;
   const goTab = (tab) => () => { state.tab = tab; state.sub = null; render(); };
+  const tokenRows = [...t.assets].sort((a, b) => (assetLabel(a[0]) < assetLabel(b[0]) ? -1 : 1)).map(([k, q]) =>
+    h('div.asset', h('span.coin.night', 'TOKEN'), h('div', h('strong', assetLabel(k)), h('span', 'Số đơn vị gốc')), h('strong', String(q))));
   return [
-    h('section.balance', h('span', 'Số dư ADA'),
+    state.groups.length > 1 ? overviewView() : null,
+    h('section.balance', h('span', `Số dư ADA · ${groupName()}`),
       h('div.amount', state.data ? `${formatUnits(t.lovelace)} ADA` : state.loading ? 'Đang tải…' : '—'),
       h('span', `${w.baseAddress.slice(0, 14)}…${w.baseAddress.slice(-8)} · khóa bí mật nằm ở ví lạnh`)),
     state.error ? h('p.warn', icon('warn'), state.error) : null,
@@ -3134,20 +3355,57 @@ function viewWallet() {
       h('button', { type: 'button', onclick: goTab('pay') }, icon('send'), 'Thanh toán'),
       h('button', { type: 'button', onclick: () => { state.sub = 'receive'; render(); } }, icon('backup'), 'Nhận'),
       h('button', { type: 'button', onclick: goTab('stake') }, icon('stake'), 'Staking'),
-      h('button', { type: 'button', onclick: goTab('stake') }, icon('shield'), 'DRep')),
+      h('button', { type: 'button', onclick: goTab('log') }, icon('shield'), 'Nhật ký')),
+    acct && acct.rewards > 0n ? h('section.card', h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`)),
+      h('button.secondary', { type: 'button', onclick: goTab('stake') }, 'Rút thưởng về ví')) : null,
     h('section', h('h3', 'TÀI SẢN'),
       h('div.asset', h('span.coin.ada', 'ADA'), h('div', h('strong', 'Cardano')), h('strong', state.data ? formatUnits(t.lovelace) : '—')),
       h('div.asset', h('span.coin.night', 'NIGHT'), h('div', h('strong', 'Midnight')), h('strong', state.data ? formatUnits(t.night, NIGHT.decimals) : '—')),
-      t.others ? h('p.hint', `Ví còn ${t.others} loại token khác (không hiển thị, vẫn được giữ nguyên khi giao dịch).`) : null),
+      tokenRows),
     acct ? h('section.card',
       h('div.kv', h('span', 'Pool đang ủy quyền'), h('strong', acct.pool ? (knownPoolName(acct.pool) || `${acct.pool.slice(0, 14)}…`) : 'Chưa có')),
       h('div.kv', h('span', 'DRep'), h('strong', acct.drep ? (knownDrepName(acct.drep) || drepLabel(acct.drep)) : 'Chưa có')),
       h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`))) : null,
+    feedView(),
     historyView(),
+    h('button.secondary.small', { type: 'button', onclick: () => { state.sub = 'pair'; render(); } }, icon('scan'), 'Thêm nhóm từ ví lạnh (quét QR)'),
     busyButton(state.loading ? 'Đang tải…' : 'Cập nhật số dư', refresh, 'secondary'),
+    h('label.check', h('input', { type: 'checkbox', checked: mon.on || null, onchange: e => setMonitor(e.target.checked) }), 'Theo dõi số dư trực tuyến (tự kiểm tra khi đang mở ví)'),
+    h('div.mon', { id: 'mon-status' }, h('i'), h('span', '')),
     state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null,
-    h('p.hint', 'Phiên bản 2.2 · 2026-11-11 06:38 UTC')
+    h('p.hint', 'Phiên bản 2.4 · 2026-11-13 14:18 UTC')
   ];
+}
+
+/** Tổng quan tất cả nhóm cùng lúc: mỗi dòng là một nhóm (một tài khoản của ví lạnh), bấm để chuyển sang nhóm đó. */
+function overviewView() {
+  let ada = 0n, night = 0n, rewards = 0n, loaded = 0;
+  const rows = state.groups.map((g, i) => {
+    const d = state.all.get(g.xpub), t = totals(d);
+    if (d) { loaded += 1; ada += t.lovelace; night += t.night; rewards += d.account.rewards; }
+    const line = d ? [`${formatUnits(t.lovelace)} ADA`, t.night > 0n ? `${formatUnits(t.night, NIGHT.decimals)} NIGHT` : null,
+      t.others ? `+${t.others} token khác` : null, d.account.rewards > 0n ? `thưởng ${formatUnits(d.account.rewards)} ADA` : null].filter(Boolean).join(' · ') : 'Chưa tải';
+    return h('button.group' + (i === state.activeGroup ? '.active' : ''), { type: 'button', role: 'radio', 'aria-checked': String(i === state.activeGroup),
+      onclick: () => { if (i !== state.activeGroup) { selectGroup(i); render(); refresh(); } } },
+      h('span.dot'), h('span.group-text', h('strong', g.name), h('span', line)));
+  });
+  return h('section', h('h3', `TẤT CẢ NHÓM (${state.groups.length})`),
+    h('div.card.tight', { role: 'radiogroup', 'aria-label': 'Chọn nhóm địa chỉ' },
+      h('div.total-line', h('span', loaded === state.groups.length ? 'Tổng cộng các nhóm' : `Tổng cộng (${loaded}/${state.groups.length} nhóm đã tải)`),
+        h('strong', `${formatUnits(ada)} ADA`), night > 0n ? h('span', `${formatUnits(night, NIGHT.decimals)} NIGHT`) : null,
+        rewards > 0n ? h('span', `Thưởng staking chờ rút: ${formatUnits(rewards)} ADA`) : null),
+      rows));
+}
+
+/** Danh sách biến động số dư phát hiện được khi theo dõi (thu gọn, bấm mới xổ ra). */
+function feedView() {
+  const box = h('details.feed', { open: state.feedOpen || null },
+    h('summary', h('span', 'Biến động số dư'), state.unread ? h('span.new-dot', `${state.unread} mới`) : null));
+  box.addEventListener('toggle', () => { state.feedOpen = box.open; if (box.open && state.unread) { state.unread = 0; const d = box.querySelector('.new-dot'); if (d) d.remove(); } });
+  if (!state.feed.length) box.append(h('p.hint', 'Chưa phát hiện biến động nào kể từ lúc mở ví.'));
+  for (const f of state.feed) box.append(h('div.feed-row', h('strong' + (f.up ? '.up' : ''), f.text),
+    h('span', `${f.group} · ${new Date(f.at).toLocaleTimeString('vi-VN')}`)));
+  return box;
 }
 
 // ---------------------------------------------------------------------------
@@ -3165,15 +3423,40 @@ async function loadHistory(next = false) {
 }
 
 const KIND_LABEL = { receive: 'Nhận', send: 'Gửi đi', delegation: 'Ủy quyền staking', withdraw: 'Rút thưởng', self: 'Ủy quyền / nội bộ ví' };
+const unitText = (k, q) => (k === NIGHT_KEY ? `${formatUnits(q, NIGHT.decimals)} NIGHT` : `${q} ${assetLabel(k)}`);
 
+/** Các khoản vào/ra của một giao dịch, tách theo từng loại tài sản: [{k, d}] (d có dấu, k = 'ADA' hoặc khóa token). */
+function itemDeltas(it) {
+  const out = [];
+  if (it.kind === 'send') { const sent = -it.netLovelace - it.fee; if (sent > 0n) out.push({ k: 'ADA', d: -sent }); }
+  else if (it.kind === 'receive' || it.kind === 'withdraw') { if (it.netLovelace !== 0n) out.push({ k: 'ADA', d: it.netLovelace }); }
+  for (const [k, d] of it.netAssets) out.push({ k, d });
+  return out;
+}
+const deltaText = ({ k, d }) => {
+  const a = d < 0n ? -d : d, sign = d < 0n ? '−' : '+';
+  return k === 'ADA' ? `${sign}${formatUnits(a)} ADA` : `${sign}${unitText(k, a)}`;
+};
 function historyAmount(it) {
-  const parts = [];
-  const signed = (v, dec, unit) => `${v > 0n ? '+' : '−'}${formatUnits(v < 0n ? -v : v, dec)} ${unit}`;
-  if (it.netNight !== 0n) parts.push(signed(it.netNight, NIGHT.decimals, 'NIGHT'));
-  if (it.kind === 'send') { const sent = -it.netLovelace - it.fee; if (sent > 0n) parts.push(signed(-sent, 6, 'ADA')); }
-  else if (it.kind === 'receive' || it.kind === 'withdraw') { if (it.netLovelace !== 0n) parts.push(signed(it.netLovelace, 6, 'ADA')); }
-  else parts.push(`Phí ${formatUnits(it.fee)} ADA`);
+  const parts = itemDeltas(it).map(deltaText);
+  if (it.kind !== 'send' && it.kind !== 'receive' && it.kind !== 'withdraw') parts.push(`Phí ${formatUnits(it.fee)} ADA`);
   return parts.join(' · ') || '0 ADA';
+}
+const whenText = it => (it.time ? new Date(it.time * 1000).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '');
+
+/** Một dòng giao dịch (thu gọn; bấm mới xổ chi tiết). `label` ghi đè tên loại giao dịch (dùng cho nhật ký nạp/rút). */
+function txRow(it, label) {
+  const row = h('details.tx' + (it.netLovelace > 0n && it.kind !== 'send' ? '.in' : ''), { open: state.openTx.has(it.txHash) || null },
+    h('summary', h('span.tx-kind', label || KIND_LABEL[it.kind]), h('span.tx-amt', historyAmount(it)), h('span.tx-time', whenText(it))),
+    h('div.tx-body',
+      it.parties.map(pt => h('div.kv.col', h('span', it.kind === 'receive' ? 'Từ địa chỉ' : 'Đến địa chỉ'), h('strong.mono', pt.address),
+        it.kind === 'receive' ? null : h('span', [pt.lovelace > 0n ? `${formatUnits(pt.lovelace)} ADA` : null, ...[...pt.assets].map(([k, q]) => unitText(k, q))].filter(Boolean).join(' + ')))),
+      it.kind !== 'receive' ? h('div.kv', h('span', 'Phí mạng'), h('strong', `${formatUnits(it.fee)} ADA`)) : null,
+      it.deposit !== 0n ? h('div.kv', h('span', it.deposit > 0n ? 'Tiền cọc staking' : 'Hoàn tiền cọc'), h('strong', `${formatUnits(it.deposit < 0n ? -it.deposit : it.deposit)} ADA`)) : null,
+      h('div.kv.col', h('span', 'Mã giao dịch'), h('strong.mono', it.txHash)),
+      h('a', { href: `https://cardanoscan.io/transaction/${it.txHash}`, target: '_blank', rel: 'noopener noreferrer' }, 'Xem trên Cardanoscan')));
+  row.addEventListener('toggle', () => { if (row.open) state.openTx.add(it.txHash); else state.openTx.delete(it.txHash); });
+  return row;
 }
 
 function historyView() {
@@ -3181,27 +3464,74 @@ function historyView() {
   const box = h('details.fold', { open: state.historyOpen || null }, h('summary', 'Lịch sử giao dịch'));
   box.addEventListener('toggle', () => { state.historyOpen = box.open; if (box.open && !state.history) loadHistory(); });
   if (!hst) return box;
-  for (const it of hst.items) {
-    const when = it.time ? new Date(it.time * 1000).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
-    const row = h('details.tx' + (it.netLovelace > 0n && it.kind !== 'send' ? '.in' : ''), { open: state.openTx.has(it.txHash) || null },
-      h('summary', h('span.tx-kind', KIND_LABEL[it.kind]), h('span.tx-amt', historyAmount(it)), h('span.tx-time', when)),
-      h('div.tx-body',
-        it.parties.map(pt => h('div.kv.col', h('span', it.kind === 'receive' ? 'Từ địa chỉ' : 'Đến địa chỉ'), h('strong.mono', pt.address),
-          it.kind === 'receive' ? null : h('span', [pt.lovelace > 0n ? `${formatUnits(pt.lovelace)} ADA` : null, pt.night > 0n ? `${formatUnits(pt.night, NIGHT.decimals)} NIGHT` : null, pt.other ? 'token khác' : null].filter(Boolean).join(' + ')))),
-        it.kind !== 'receive' ? h('div.kv', h('span', 'Phí mạng'), h('strong', `${formatUnits(it.fee)} ADA`)) : null,
-        it.deposit !== 0n ? h('div.kv', h('span', it.deposit > 0n ? 'Tiền cọc staking' : 'Hoàn tiền cọc'), h('strong', `${formatUnits(it.deposit < 0n ? -it.deposit : it.deposit)} ADA`)) : null,
-        it.other ? h('div.kv', h('span', 'Ghi chú'), h('strong', 'Có token khác trong giao dịch')) : null,
-        h('div.kv.col', h('span', 'Mã giao dịch'), h('strong.mono', it.txHash)),
-        h('a', { href: `https://cardanoscan.io/transaction/${it.txHash}`, target: '_blank', rel: 'noopener noreferrer' }, 'Xem trên Cardanoscan')));
-    row.addEventListener('toggle', () => { if (row.open) state.openTx.add(it.txHash); else state.openTx.delete(it.txHash); });
-    box.append(row);
-  }
+  for (const it of hst.items) box.append(txRow(it));
   if (hst.loading) box.append(h('p.hint', 'Đang tải…'));
   if (hst.error) box.append(h('p.warn', icon('warn'), hst.error));
   if (!hst.loading && !hst.error && hst.page > 0 && hst.items.length === 0) box.append(h('p.hint', 'Chưa có giao dịch nào.'));
   if (!hst.loading && hst.more && hst.page > 0) box.append(h('button.secondary.small', { type: 'button', onclick: () => loadHistory(true) }, 'Xem thêm'));
   if (!hst.loading && hst.error) box.append(h('button.secondary.small', { type: 'button', onclick: () => loadHistory(true) }, 'Thử lại'));
   return box;
+}
+
+// ---------------------------------------------------------------------------
+// Nhật ký nạp / rút: chỉ những giao dịch có tiền vào hoặc ra khỏi ví (không gồm ủy quyền, giao dịch nội bộ)
+// ---------------------------------------------------------------------------
+const LOG_KIND = { receive: 'in', send: 'out', withdraw: 'reward' };
+const LOG_LABEL = { in: 'Nạp (nhận vào)', out: 'Rút (gửi đi)', reward: 'Thưởng staking' };
+
+function logItems() {
+  if (!state.history) return [];
+  return state.history.items.filter(it => LOG_KIND[it.kind] && (state.logFilter === 'all' || LOG_KIND[it.kind] === state.logFilter));
+}
+
+function logCsv(items) {
+  const safe = v => { let t = String(v).replace(/[\r\n]+/g, ' '); if (/^[=+\-@\t]/.test(t)) t = "'" + t; return /[",;]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
+  const rows = [['Thời gian (UTC)', 'Nhóm', 'Loại', 'ADA', 'Token khác (đơn vị gốc)', 'Phí ADA', 'Đối tác', 'Mã giao dịch']];
+  for (const it of items) {
+    const d = itemDeltas(it), ada = d.find(x => x.k === 'ADA');
+    const adaTxt = ada ? (ada.d < 0n ? '-' : '') + formatUnits(ada.d < 0n ? -ada.d : ada.d).replace(/\./g, '').replace(',', '.') : '0';
+    const toks = d.filter(x => x.k !== 'ADA').map(x => `${assetLabel(x.k)}=${x.d}`).join(' ');
+    rows.push([it.time ? new Date(it.time * 1000).toISOString().replace('T', ' ').slice(0, 19) : '', groupName(), LOG_LABEL[LOG_KIND[it.kind]], adaTxt, toks,
+      it.kind === 'send' ? formatUnits(it.fee).replace(/\./g, '').replace(',', '.') : '', it.parties.map(p => p.address).join(' '), it.txHash]);
+  }
+  return '﻿' + rows.map(r => r.map(safe).join(',')).join('\r\n') + '\r\n';
+}
+
+function viewLog() {
+  if (!state.key) return viewKeySetup();
+  const hst = state.history, items = logItems();
+  const sum = { in: new Map(), out: new Map() };
+  for (const it of items) for (const x of itemDeltas(it)) { const m = x.d > 0n ? sum.in : sum.out; m.set(x.k, (m.get(x.k) || 0n) + (x.d < 0n ? -x.d : x.d)); }
+  const fmtSum = m => { const l = [...m].sort((a, b) => (a[0] === 'ADA' ? -1 : b[0] === 'ADA' ? 1 : 0)).map(([k, q]) => (k === 'ADA' ? `${formatUnits(q)} ADA` : unitText(k, q))); return l.length ? l.join('\n') : '—'; };
+  const chip = (id, label) => h('button' + (state.logFilter === id ? '.active' : ''), { type: 'button', 'aria-pressed': String(state.logFilter === id), onclick: () => { state.logFilter = id; render(); } }, label);
+  const out = [
+    state.groups.length > 1 ? h('div.field', h('label', 'Nhóm ví'),
+      h('select', { 'aria-label': 'Chọn nhóm ví', onchange: e => { selectGroup(Number(e.target.value)); render(); refresh(); } },
+        state.groups.map((g, i) => h('option', { value: String(i), selected: i === state.activeGroup || null }, g.name)))) : null,
+    h('div.seg.four', { role: 'group', 'aria-label': 'Lọc nhật ký' }, chip('all', 'Tất cả'), chip('in', 'Nạp'), chip('out', 'Rút'), chip('reward', 'Thưởng')),
+    h('div.sum2', h('div.in', h('span', 'Tổng nạp / thưởng (đã tải)'), h('strong.pre', fmtSum(sum.in))),
+      h('div', h('span', 'Tổng rút (đã tải, chưa gồm phí)'), h('strong.pre', fmtSum(sum.out)))),
+    h('p.hint', `Nhóm «${groupName()}». «Nạp» là tiền từ ví khác chuyển vào, «Rút» là tiền bạn gửi đi. Chạm vào từng dòng để xem chi tiết.`)
+  ];
+  const list = h('section.card.tight');
+  let lastDay = '';
+  for (const it of items) {
+    const day = it.time ? new Date(it.time * 1000).toLocaleDateString('vi-VN', { dateStyle: 'full' }) : 'Không rõ ngày';
+    if (day !== lastDay) { list.append(h('div.dayhead', day)); lastDay = day; }
+    list.append(txRow(it, LOG_LABEL[LOG_KIND[it.kind]]));
+  }
+  if (!hst || hst.loading) list.append(h('p.hint', 'Đang tải…'));
+  else if (hst.error) list.append(h('p.warn', icon('warn'), hst.error));
+  else if (!items.length) list.append(h('p.hint', hst.more ? 'Chưa thấy giao dịch phù hợp trong phần đã tải. Bấm "Xem thêm".' : 'Chưa có giao dịch nạp / rút nào.'));
+  out.push(list);
+  if (hst && !hst.loading && hst.more && hst.page > 0) out.push(h('button.secondary', { type: 'button', onclick: () => loadHistory(true) }, 'Xem thêm giao dịch cũ hơn'));
+  if (hst && !hst.loading && hst.error) out.push(h('button.secondary', { type: 'button', onclick: () => loadHistory(true) }, 'Thử lại'));
+  out.push(busyButton('Xuất nhật ký ra file CSV', async () => {
+    if (!items.length) throw new Error('Chưa có dòng nào để xuất');
+    const name = `nhat-ky-${state.wallet.baseAddress.slice(-6)}-${new Date().toISOString().slice(0, 10)}.csv`;
+    if (await saveTextFile(name, logCsv(items), 'text/csv')) toast('Đã lưu file nhật ký.');
+  }, 'ghost'));
+  return out;
 }
 
 const drepLabel = d => ({ drep_always_abstain: 'Luôn bỏ phiếu trắng', drep_always_no_confidence: 'Luôn bất tín nhiệm' }[d] || `${d.slice(0, 14)}…`);
@@ -3214,7 +3544,7 @@ async function startFlow(title, makeArgs) {
   // Luôn lấy UTXO, tham số và slot mới nhất ngay trước khi dựng
   const [utxos, account, tip] = await Promise.all([
     fetchUtxos(state.wallet.baseAddress), fetchAccount(state.wallet.stakeAddress), fetchTipAndParams()]);
-  state.data = { utxos, account, at: Date.now() };
+  record(activeGroup(), { utxos, account, at: Date.now() });
   const args = makeArgs({ account, params: tip.params });
   const tx = buildUnsignedTx({ wallet: state.wallet, utxos, params: tip.params, ttl: tip.slot + TTL_SECONDS, ...args });
   // Ví nóng đọc lại giao dịch bằng CHÍNH hàm mà ví lạnh dùng, để hai màn hình hiển thị giống nhau
@@ -3225,7 +3555,7 @@ async function startFlow(title, makeArgs) {
 
 function summaryCard(a) {
   const rows = [];
-  const tokens = m => [...m].map(([k, q]) => (k === NIGHT_KEY ? `${formatUnits(q, NIGHT.decimals)} NIGHT` : `${q} token khác`));
+  const tokens = m => [...m].map(([k, q]) => unitText(k, q));
   for (const o of a.external) {
     rows.push(h('div.kv.col', h('span', 'Gửi đến'), h('strong.mono', o.address),
       h('span', [o.lovelace > 0n ? `${formatUnits(o.lovelace)} ADA` : null, ...tokens(o.assets.map(x => [x.key, x.qty]))].filter(Boolean).join(' + '))));
@@ -3267,7 +3597,7 @@ function viewFlow() {
           if (witnesses.length !== f.witnessCount) throw new Error('Thiếu chữ ký cần thiết');
           const expected = [state.wallet.payPub, state.wallet.stakePub];
           witnesses.forEach((w, i) => {
-            if (!bytesEqual(w.vkey, expected[i]) || !verifyEd25519(expected[i], f.hash, w.sig)) throw new Error('Chữ ký không hợp lệ hoặc không phải của ví lạnh đã ghép nối');
+            if (!bytesEqual(w.vkey, expected[i]) || !verifyEd25519(expected[i], f.hash, w.sig)) throw new Error(`Chữ ký không khớp với nhóm «${groupName()}». Hãy kiểm tra ví lạnh đang ký đúng nhóm này và đã ghép nối đúng ví.`);
           });
           f.signed = assembleSignedTx(f.body, witnesses);
           f.step = 'confirm';
@@ -3284,7 +3614,7 @@ function viewFlow() {
       busyButton('Gửi giao dịch lên mạng', async () => {
         const id = await submitTx(f.signed);
         f.txId = id && id.length === 64 ? id : bytesToHex(f.hash);
-        f.step = 'done'; state.data = null; render();
+        f.step = 'done'; state.data = null; state.all.delete(activeGroup().xpub); render();
       }), cancel];
   }
   return [h('section.card.center', h('span.caps', 'ĐÃ GỬI'), h('p', 'Giao dịch đã được mạng tiếp nhận. Số dư sẽ cập nhật sau khoảng 1 phút.'),
@@ -3302,48 +3632,71 @@ function extractAddress(text) {
   return m[1];
 }
 
+/** Các tài sản đang có trong ví để chọn khi gửi: ADA, NIGHT và mọi token khác (số đơn vị gốc). */
+function payAssets() {
+  const t = totals();
+  const list = [{ id: 'ADA', label: 'ADA', dec: 6, have: t.lovelace }, { id: NIGHT_KEY, label: 'NIGHT', dec: NIGHT.decimals, have: t.night }];
+  for (const [k, q] of [...t.assets].sort((a, b) => (assetLabel(a[0]) < assetLabel(b[0]) ? -1 : 1))) list.push({ id: k, label: assetLabel(k), dec: 0, have: q });
+  return list;
+}
+const fmtHave = (a) => (a.id === 'ADA' ? `${formatUnits(a.have)} ADA` : a.dec ? `${formatUnits(a.have, a.dec)} ${a.label}` : `${a.have} ${a.label} (đơn vị gốc)`);
+
 function viewPay() {
-  const p = state.pay, t = totals();
+  const p = state.pay;
   if (state.sub === 'scanAddr') {
     const sc = scanner({ accept: extractAddress, onCancel: () => { state.sub = null; render(); },
       onResult: addr => { p.to = addr; state.sub = null; render(); } });
     state.cleanup = sc.stop;
     return [h('section.card', h('h2', 'Quét địa chỉ người nhận')), sc.el];
   }
-  const isAda = p.asset === 'ADA';
+  const assets = payAssets(), byId = new Map(assets.map(a => [a.id, a]));
   const to = field('Người nhận', { type: 'text', placeholder: 'Dán địa chỉ addr1…', value: p.to });
-  const amount = field('Số tiền', { type: 'text', inputmode: 'decimal', placeholder: '0', value: p.amount });
   to.input.addEventListener('input', () => { p.to = to.input.value; });
-  amount.input.addEventListener('input', () => { p.amount = amount.input.value; p.all = false; });
-  const available = isAda ? `${formatUnits(t.lovelace)} ADA` : `${formatUnits(t.night, NIGHT.decimals)} NIGHT`;
-  const seg = name => h('button' + (p.asset === name ? '.active' : ''), { type: 'button', 'aria-pressed': String(p.asset === name),
-    onclick: () => { p.asset = name; p.amount = ''; p.all = false; render(); } }, name);
+  const rows = p.lines.map((ln, i) => {
+    const a = byId.get(ln.asset) || assets[0];
+    const amount = h('input', { type: 'text', inputmode: 'decimal', placeholder: a.dec ? '0' : 'Số đơn vị gốc', value: ln.amount, 'aria-label': `Số lượng ${a.label}` });
+    amount.addEventListener('input', () => { ln.amount = amount.value; ln.all = false; });
+    const pick = h('select.asset-pick', { 'aria-label': 'Chọn tài sản' }, assets.map(x => h('option', { value: x.id, selected: x.id === ln.asset || null }, x.label)));
+    pick.addEventListener('change', () => { ln.asset = pick.value; ln.amount = ''; ln.all = false; render(); });
+    return h('div.tokrow' + (p.lines.length > 1 ? '' : '.solo'), pick,
+      p.lines.length > 1 ? h('button.secondary.small', { type: 'button', 'aria-label': 'Bỏ dòng này', onclick: () => { p.lines.splice(i, 1); render(); } }, '✕') : null,
+      h('div.inline', amount, h('button.secondary.small', { type: 'button', onclick: () => {
+        if (!state.data) return toast('Hãy cập nhật số dư trước.', true);
+        if (a.id === 'ADA') { ln.all = true; ln.amount = 'Toàn bộ'; }
+        else ln.amount = a.dec ? formatUnits(a.have, a.dec).replace(/\./g, '') : String(a.have);
+        render();
+      } }, 'Tối đa')),
+      h('p.hint', state.data ? `Khả dụng: ${fmtHave(a)}` : 'Chưa tải số dư'));
+  });
+  const free = assets.filter(a => !p.lines.some(l => l.asset === a.id));
   return [
-    h('div.seg', { role: 'group', 'aria-label': 'Chọn tài sản' }, seg('ADA'), seg('NIGHT')),
     h('section.card',
       h('div.field', to.el.firstChild, h('div.inline', to.input,
-        h('button.secondary', { type: 'button', 'aria-label': 'Quét QR địa chỉ người nhận', onclick: () => { state.sub = 'scanAddr'; render(); } }, icon('scan')))),
-      h('div.field', amount.el.firstChild, h('div.inline', amount.input,
-        h('button.secondary.small', { type: 'button', onclick: () => {
-          if (!state.data) return toast('Hãy cập nhật số dư trước.', true);
-          if (isAda) { p.all = true; p.amount = 'Toàn bộ'; } else { p.amount = formatUnits(t.night, NIGHT.decimals).replace(/\./g, ''); }
-          render();
-        } }, 'Tối đa')),
-        h('p.hint', state.data ? `Khả dụng: ${available}` : 'Chưa tải số dư'))),
-    !isAda ? h('p.hint', 'Gửi NIGHT sẽ kèm khoảng 1,2 ADA theo quy định tối thiểu của mạng Cardano.') : null,
+        h('button.secondary', { type: 'button', 'aria-label': 'Quét QR địa chỉ người nhận', onclick: () => { state.sub = 'scanAddr'; render(); } }, icon('scan'))))),
+    h('section', h('h3', p.lines.length > 1 ? `TÀI SẢN SẼ GỬI (${p.lines.length})` : 'TÀI SẢN SẼ GỬI'), h('div.card.tight', rows),
+      free.length && p.lines.length < 8 ? h('button.secondary.small', { type: 'button', onclick: () => { p.lines.push({ asset: free[0].id, amount: '', all: false }); render(); } }, '+ Thêm token vào cùng giao dịch') : null),
+    p.lines.some(l => l.asset !== 'ADA') ? h('p.hint', 'Khi gửi token, mạng Cardano bắt buộc kèm một lượng ADA tối thiểu (khoảng 1–2 ADA) đi cùng; ví tự thêm. Token khác NIGHT nhập theo số đơn vị gốc, ví lạnh sẽ hiện đúng số đó để bạn đối chiếu.') : null,
     h('div.spacer'),
     busyButton('Tạo mã QR cho ví lạnh', async () => {
       const addressBytes = parseAddress(p.to);
       if (bytesEqual(addressBytes, state.wallet.baseAddressBytes)) throw new Error('Đây là địa chỉ của chính ví này');
-      let payment;
-      if (isAda && p.all) payment = { addressBytes, lovelace: 0n, assets: new Map(), sendAll: true };
-      else {
-        const units = parseUnits(p.amount, isAda ? 6 : NIGHT.decimals);
-        if (units <= 0n) throw new Error('Hãy nhập số tiền lớn hơn 0');
-        payment = isAda ? { addressBytes, lovelace: units, assets: new Map() } : { addressBytes, lovelace: 0n, assets: new Map([[NIGHT_KEY, units]]) };
+      const seen = new Set(); let lovelace = 0n, sendAll = false; const amap = new Map();
+      for (const ln of p.lines) {
+        if (seen.has(ln.asset)) throw new Error('Mỗi tài sản chỉ được chọn một lần');
+        seen.add(ln.asset);
+        const a = byId.get(ln.asset);
+        if (!a) throw new Error('Ví không có tài sản này');
+        if (ln.asset === 'ADA' && ln.all) { sendAll = true; continue; }
+        if (ln.asset === 'ADA' && p.lines.length > 1 && !ln.amount.trim()) continue;   // để trống = ví tự thêm ADA tối thiểu
+        const units = parseUnits(ln.amount, a.dec);
+        if (units <= 0n) throw new Error('Hãy nhập số lượng lớn hơn 0');
+        if (units > a.have) throw new Error(`Số dư ${a.label} không đủ`);
+        if (ln.asset === 'ADA') lovelace = units; else amap.set(ln.asset, units);
       }
-      await startFlow('Thanh toán', () => ({ payment }));
-      state.pay = { asset: p.asset, to: '', amount: '', all: false };
+      if (sendAll && amap.size) throw new Error('"Tối đa" ADA không dùng chung với token khác; hãy nhập số ADA cụ thể.');
+      const payment = { addressBytes, lovelace: sendAll ? 0n : lovelace, assets: amap, ...(sendAll ? { sendAll: true } : {}) };
+      await startFlow(amap.size > 1 || (amap.size && lovelace > 0n) ? 'Gửi nhiều tài sản' : 'Thanh toán', () => ({ payment }));
+      state.pay = { to: '', lines: [{ asset: 'ADA', amount: '', all: false }] };
     })
   ];
 }
@@ -3409,18 +3762,22 @@ function viewBackup() {
   const last = localStorage.getItem('adagap.hot.lastBackup');
   return [
     h('section.card', h('h2', 'Sao lưu ví nóng'),
-      h('p', 'File chỉ chứa khóa công khai của ví (không chứa khóa bí mật, không tiêu được tiền). Ai có file này sẽ xem được số dư của bạn.'),
+      h('p', `File chứa khóa công khai của ${state.groups.length} nhóm (không chứa khóa bí mật, không tiêu được tiền). Ai có file này sẽ xem được số dư của bạn. Project ID Blockfrost không nằm trong file.`),
       busyButton('Sao lưu — chọn nơi lưu file', async () => {
         const name = `vi-nong-${state.wallet.baseAddress.slice(-6)}-${new Date().toISOString().slice(0, 10)}.json`;
-        const text = JSON.stringify({ type: 'adagap-hot-backup', v: 1, xpub: bytesToB64(state.wallet.accountXpub), address: state.wallet.baseAddress }, null, 1);
+        const text = JSON.stringify({ type: 'adagap-hot-backup', v: 2, groups: state.groups }, null, 1);
         if (await saveTextFile(name, text)) { localStorage.setItem('adagap.hot.lastBackup', new Date().toISOString()); toast('Đã lưu file sao lưu.'); render(); }
       }),
       h('p.hint', last ? `Lần sao lưu gần nhất: ${new Date(last).toLocaleString('vi-VN')}` : 'Chưa sao lưu lần nào.')),
-    h('section.card', h('h2', 'Khôi phục ví nóng'), h('p', 'Từ file đã lưu, hoặc ghép nối lại bằng mã QR của ví lạnh.'),
+    h('section.card', h('h2', 'Khôi phục và nhóm'), h('p', 'Khôi phục từ file đã lưu, hoặc ghép nối thêm nhóm bằng mã QR của ví lạnh.'),
       busyButton('Chọn file sao lưu', restoreFromFile, 'secondary'),
-      h('button.secondary', { type: 'button', onclick: () => confirmDialog('Hủy ghép nối hiện tại để quét lại mã từ ví lạnh?', 'Hủy ghép nối', () => {
-        localStorage.removeItem(STORE_KEY); state.wallet = null; state.data = null; state.sub = 'pair'; render();
-      }) }, 'Ghép nối lại bằng QR')),
+      h('button.secondary', { type: 'button', onclick: () => { state.tab = 'wallet'; state.sub = 'pair'; render(); } }, icon('scan'), 'Thêm / ghép nối lại nhóm bằng QR'),
+      h('button.ghost', { type: 'button', onclick: () => confirmDialog(`Gỡ nhóm «${groupName()}» khỏi ví nóng? Tiền không bị ảnh hưởng; muốn xem lại chỉ cần ghép nối lại từ ví lạnh.`, 'Gỡ nhóm', () => {
+        state.all.delete(state.groups[state.activeGroup].xpub);
+        state.groups.splice(state.activeGroup, 1);
+        if (state.groups.length) { selectGroup(0); state.tab = 'wallet'; refresh(); }
+        else { persistGroups(); state.wallet = null; state.data = null; state.history = null; state.sub = null; render(); }
+      }) }, `Gỡ nhóm «${groupName()}»`)),
     h('section.card', h('h2', 'Kết nối mạng'), h('p', state.key ? `Đang dùng Blockfrost, Project ID …${state.key.slice(-4)}` : 'Chưa nhập Project ID của Blockfrost.'),
       h('button.secondary', { type: 'button', onclick: () => { state.tab = 'wallet'; state.sub = 'key'; render(); } }, 'Đổi Project ID Blockfrost'))
   ];
@@ -3437,10 +3794,13 @@ async function boot() {
     root.append(h('div.gate', h('h1', 'Tự kiểm tra không đạt'), h('p', `Bước lỗi: ${failed}. Ví nóng từ chối chạy trên trình duyệt này. Hãy cập nhật iOS/Safari.`)));
     return;
   }
-  state.wallet = loadWallet();
+  loadGroups();
   try { const k = localStorage.getItem(KEY_STORE); if (isValidProjectId(k)) { state.key = k; setProjectId(k); } } catch { /* chưa có */ }
+  try { mon.on = localStorage.getItem(MON_KEY) !== '0'; } catch { /* mặc định bật */ }
   render();
   if (state.wallet) refresh();
+  monSchedule();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && mon.on && Date.now() - mon.last > 15000) pollOnce().then(monSchedule); });
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 boot();
