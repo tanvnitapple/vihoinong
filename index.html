@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MSQ8IOrQKkQkcPukpYtySK9XVkfrWoV2rhR99R/id0Y='; style-src 'sha256-4mHQDj8iUH+OytkbRZm7iXrtQ9cTpiSH50HzEbcoVWU='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Mk89Q3pHOosNmoQh2ZlHIiqrONgEACNqg9a8kB4yBgw='; style-src 'sha256-4mHQDj8iUH+OytkbRZm7iXrtQ9cTpiSH50HzEbcoVWU='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F7">
@@ -3356,8 +3356,8 @@ function viewWallet() {
       h('button', { type: 'button', onclick: () => { state.sub = 'receive'; render(); } }, icon('backup'), 'Nhận'),
       h('button', { type: 'button', onclick: goTab('stake') }, icon('stake'), 'Staking'),
       h('button', { type: 'button', onclick: goTab('log') }, icon('shield'), 'Nhật ký')),
-    acct && acct.rewards > 0n ? h('section.card', h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`)),
-      h('button.secondary', { type: 'button', onclick: goTab('stake') }, 'Rút thưởng về ví')) : null,
+    acct ? h('section.card', h('div.kv', h('span', 'Thưởng staking chờ rút'), h('strong', `${formatUnits(acct.rewards)} ADA`)),
+      h('button.' + (acct.rewards > 0n ? 'primary' : 'secondary'), { type: 'button', onclick: goTab('stake') }, 'Tạo giao dịch rút thưởng')) : null,
     h('section', h('h3', 'TÀI SẢN'),
       h('div.asset', h('span.coin.ada', 'ADA'), h('div', h('strong', 'Cardano')), h('strong', state.data ? formatUnits(t.lovelace) : '—')),
       h('div.asset', h('span.coin.night', 'NIGHT'), h('div', h('strong', 'Midnight')), h('strong', state.data ? formatUnits(t.night, NIGHT.decimals) : '—')),
@@ -3373,7 +3373,7 @@ function viewWallet() {
     h('label.check', h('input', { type: 'checkbox', checked: mon.on || null, onchange: e => setMonitor(e.target.checked) }), 'Theo dõi số dư trực tuyến (tự kiểm tra khi đang mở ví)'),
     h('div.mon', { id: 'mon-status' }, h('i'), h('span', '')),
     state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null,
-    h('p.hint', 'Phiên bản 2.4 · 2026-11-13 14:18 UTC')
+    h('p.hint', 'Phiên bản 2.4 · 2026-11-16 06:39 UTC')
   ];
 }
 
@@ -3704,6 +3704,32 @@ function viewPay() {
 // ---------------------------------------------------------------------------
 // Tab Ủy quyền
 // ---------------------------------------------------------------------------
+/** Thẻ "Rút thưởng staking" (luôn hiện ở tab Ủy quyền): tạo giao dịch rút TOÀN BỘ thưởng về địa chỉ của ví, ví lạnh ký. */
+function rewardCard(acct) {
+  const rewards = acct ? acct.rewards : 0n;
+  const FEE_EST = 180000n;
+  const rows = [
+    h('h2', 'Rút thưởng staking'),
+    h('div.kv', h('span', 'Thưởng đang chờ rút'), h('strong', acct ? `${formatUnits(rewards)} ADA` : 'Chưa tải')),
+    acct ? h('div.kv', h('span', 'Phí mạng ước tính'), h('strong', `≈ ${formatUnits(FEE_EST)} ADA`)) : null,
+    acct && rewards > FEE_EST ? h('div.kv', h('span', 'Bạn nhận về ví (ước tính)'), h('strong', `≈ ${formatUnits(rewards - FEE_EST)} ADA`)) : null,
+    acct && rewards > 0n && rewards <= 300000n ? h('p.warn', icon('warn'), 'Thưởng còn nhỏ so với phí mạng. Nên chờ tích lũy thêm rồi hãy rút.') : null,
+    acct && !acct.drep ? h('p.warn', icon('warn'), 'Mạng Cardano chỉ cho rút thưởng khi tài khoản đã ủy quyền DRep. Hãy chọn DRep ở bên dưới, ký và gửi trước, rồi quay lại rút.') : null,
+    h('p.hint', 'Mạng bắt buộc rút toàn bộ thưởng một lần (không rút một phần). Thưởng được cộng vào địa chỉ ví này; ví lạnh sẽ hiện số tiền rút để bạn đối chiếu trước khi ký.'),
+    busyButton('Rút thưởng về ví', async () => {
+      await startFlow('Rút thưởng', ({ account }) => {
+        if (account.rewards <= 0n) throw new Error('Hiện chưa có thưởng staking để rút');
+        if (!account.registered) throw new Error('Khóa stake chưa đăng ký nên chưa có thưởng');
+        if (!account.drep) throw new Error('Mạng Cardano yêu cầu ủy quyền DRep trước khi rút thưởng. Hãy chọn một DRep ở bên dưới.');
+        return { withdrawal: account.rewards };
+      });
+    }, 'primary')
+  ];
+  const others = state.groups.map((g, i) => ({ g, i, d: state.all.get(g.xpub) })).filter(x => x.i !== state.activeGroup && x.d && x.d.account.rewards > 0n);
+  if (others.length) rows.push(h('p.hint', 'Nhóm khác cũng có thưởng: ' + others.map(x => `«${x.g.name}» ${formatUnits(x.d.account.rewards)} ADA`).join(', ') + '. Chọn nhóm đó ở tab Ví rồi rút (mỗi nhóm một giao dịch).'));
+  return h('section.card', rows);
+}
+
 function viewStake() {
   const s = state.stake, acct = state.data ? state.data.account : null;
   const choice = (group, id, title, sub) => h('div.choice' + (s[group] === id ? '.selected' : ''),
@@ -3741,16 +3767,7 @@ function viewStake() {
     }),
     h('p.hint', 'Ủy quyền không chuyển tiền đi đâu cả. Lần đầu cần cọc 2 ADA (được hoàn khi hủy đăng ký). Mỗi lần ủy quyền đều cần ví lạnh ký.')
   ];
-  if (acct && acct.rewards > 0n) {
-    out.push(h('section.card', h('h2', 'Thưởng staking'), h('p', `Đang có ${formatUnits(acct.rewards)} ADA chờ rút.`),
-      busyButton('Rút thưởng về ví', async () => {
-        await startFlow('Rút thưởng', ({ account }) => {
-          if (account.rewards <= 0n) throw new Error('Không còn thưởng để rút');
-          if (!account.drep) throw new Error('Mạng Cardano yêu cầu ủy quyền DRep trước khi rút thưởng. Hãy chọn một DRep ở trên.');
-          return { withdrawal: account.rewards };
-        });
-      }, 'secondary')));
-  }
+  out.unshift(rewardCard(acct));
   if (!state.data) out.unshift(busyButton('Tải trạng thái ủy quyền', refresh, 'secondary'));
   return out;
 }
