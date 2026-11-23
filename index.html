@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Mk89Q3pHOosNmoQh2ZlHIiqrONgEACNqg9a8kB4yBgw='; style-src 'sha256-4mHQDj8iUH+OytkbRZm7iXrtQ9cTpiSH50HzEbcoVWU='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-X3BUSPMG3Ds5nZVmzzg411V47A6QLTF6dg7RlX77LOE='; style-src 'sha256-emDr8diWg9LiiNDAFFoGA5k+M1L0EdkFWzj+s9GEt+k='; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src https://cardano-mainnet.blockfrost.io; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F7">
@@ -184,6 +184,8 @@ details.feed>.hint,details.feed>.warn,details.feed>button{margin:0 0 12px}
 .total-line strong{font-size:20px}
 .total-line span{font-size:13px;color:var(--muted)}
 .pre{white-space:pre-line}
+
+.pair-review-addresses { max-height: 35vh; overflow: auto; overflow-wrap: anywhere; }
 </style>
 </head>
 <body class="hot">
@@ -2884,7 +2886,7 @@ async function call(path, allow404 = false) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
-    const res = await fetch(API + path, { headers: { project_id: projectId }, signal: ctrl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
+    const res = await fetch(API + path, { headers: { project_id: projectId }, signal: ctrl.signal, redirect: 'error', credentials: 'omit', referrerPolicy: 'no-referrer' });
     if (res.status === 404 && allow404) return null;
     if (!res.ok) throw new Error(explain(res.status, await res.text().catch(() => '')));
     return await res.json();
@@ -3030,16 +3032,22 @@ async function fetchTipAndParams() {
   return { slot, params };
 }
 
-async function submitTx(signedTxBytes) {
+async function submitTx(signedTxBytes, expectedHash) {
   if (!projectId) throw new Error('Chưa nhập Project ID của Blockfrost');
-  let res;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  let res, text;
   try {
     res = await fetch(API + '/tx/submit', {
       method: 'POST', headers: { project_id: projectId, 'Content-Type': 'application/cbor' }, body: signedTxBytes,
-      credentials: 'omit', referrerPolicy: 'no-referrer'
+      credentials: 'omit', referrerPolicy: 'no-referrer', signal: ctrl.signal, redirect: 'error'
     });
-  } catch (e) { throw new Error(`Không gửi được lên máy chủ. Giao dịch CHƯA được gửi, có thể thử lại. (chi tiết: ${String(e && e.message).slice(0, 120)})`); }
-  const text = (await res.text()).slice(0, 3000);
+    text = (await res.text()).slice(0, 3000);
+  } catch {
+    throw new Error('Chưa xác nhận Blockfrost đã nhận giao dịch. Hãy tra cứu mã ' + expectedHash + ' trước khi thử lại.');
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) {
     if (/All inputs are spent|BadInputsUTxO/.test(text)) throw new Error('Số dư của ví đã thay đổi (hoặc giao dịch này đã được gửi rồi). Hãy cập nhật số dư và tạo lại giao dịch.');
     if (/OutsideValidityInterval/.test(text)) throw new Error('Giao dịch đã hết hạn. Hãy tạo lại và ký lại.');
@@ -3049,7 +3057,12 @@ async function submitTx(signedTxBytes) {
     if (res.status === 403 || res.status === 402 || res.status === 429 || res.status === 418) throw new Error(explain(res.status, ''));
     throw new Error(`Mạng từ chối giao dịch (${res.status}): ${text.replace(/[^\x20-\x7E]/g, ' ').slice(0, 300)}`);
   }
-  return text.replace(/[^0-9a-f]/gi, '').slice(0, 64).toLowerCase();
+  let id;
+  try { id = JSON.parse(text); } catch { id = null; }
+  if (typeof id !== 'string' || !/^[0-9a-f]{64}$/i.test(id) || id.toLowerCase() !== expectedHash) {
+    throw new Error('Phản hồi Blockfrost không xác nhận giao dịch. Hãy tra cứu mã ' + expectedHash + ' trước khi thử lại.');
+  }
+  return expectedHash;
 }
 
 // ---- hot/hot.js ----
@@ -3065,7 +3078,8 @@ async function submitTx(signedTxBytes) {
 
 
 const STORE_KEY = 'adagap.hot.v1';
-const KEY_STORE = 'adagap.hot.blockfrost';
+const LEGACY_KEY_STORE = 'adagap.hot.blockfrost';
+const KEY_STORE = 'adagap.hot.blockfrost.remembered';
 const TTL_SECONDS = 3 * 3600; // giao dịch có hiệu lực 3 giờ kể từ lúc tạo
 
 const root = document.getElementById('app');
@@ -3263,13 +3277,44 @@ function busyButton(label, action, cls = 'primary') {
 // ---------------------------------------------------------------------------
 // Chưa ghép nối
 // ---------------------------------------------------------------------------
+function reviewGroups(groups, replacing, onConfirm) {
+  const addresses = groups.map(g => {
+    const address = walletFromXpub(b64ToBytes(g.xpub)).baseAddress;
+    return h('div.kv.col', h('strong', g.name), h('span.mono', address));
+  });
+  const overlay = h('div.overlay', { role: 'dialog', 'aria-modal': 'true' });
+  const close = () => overlay.remove();
+  overlay.append(h('div.card',
+    h('h2', 'Đối chiếu ví lạnh'),
+    h('p', 'Đối chiếu từng địa chỉ nhận dưới đây với địa chỉ hiện trực tiếp trên ví lạnh.'),
+    replacing ? h('p.warn', 'Thao tác này sẽ thay toàn bộ nhóm hiện tại.') : null,
+    h('div', { class: 'pair-review-addresses' }, addresses),
+    h('button.primary', { type: 'button', onclick: () => {
+      close();
+      try { onConfirm(); } catch (e) { toast(e.message, true); render(); }
+    } }, 'Xác nhận đã đối chiếu'),
+    h('button.ghost', { type: 'button', onclick: close }, 'Hủy')));
+  root.append(overlay);
+}
+
 function viewPairScan() {
   const sc = scanner({
     type: 'P',
     onCancel: () => { state.sub = null; render(); },
     onResult: payload => {
-      try { const name = addGroupFromPairing(payload); toast(`Đã ghép nối nhóm «${name}».`); state.sub = null; state.tab = 'wallet'; refresh(); }
-      catch (e) { state.sub = null; toast(e.message, true); render(); }
+      try {
+        const xpub = bytesToB64(payload.slice(0, 64));
+        const name = cleanName(bytesToUtf8(payload.slice(64))) || 'Nhóm';
+        walletFromXpub(b64ToBytes(xpub));
+        state.sub = null;
+        render();
+        reviewGroups([{ xpub, name }], false, () => {
+          const pairedName = addGroupFromPairing(payload);
+          toast('Đã ghép nối nhóm «' + pairedName + '».');
+          state.tab = 'wallet';
+          refresh();
+        });
+      } catch (e) { state.sub = null; toast(e.message, true); render(); }
     }
   });
   state.cleanup = sc.stop;
@@ -3296,19 +3341,34 @@ async function restoreFromFile() {
   if (j.v === 1 && typeof j.xpub === 'string') groups = [{ xpub: j.xpub, name: 'Ví chính' }];
   else if (j.v === 2 && Array.isArray(j.groups) && j.groups.length >= 1 && j.groups.length <= MAX_GROUPS) groups = j.groups.map(g => ({ xpub: String(g && g.xpub), name: cleanName(g && g.name) || 'Nhóm' }));
   else throw new Error('File sao lưu ví nóng sai định dạng');
-  groups.forEach(g => walletFromXpub(b64ToBytes(g.xpub)));
-  state.all.clear(); state.feed = []; state.unread = 0;
-  state.groups = groups; selectGroup(0);
-  state.tab = 'wallet'; state.sub = null;
-  toast('Đã khôi phục ví nóng.');
-  refresh();
+  reviewGroups(groups, state.groups.length > 0, () => {
+    state.all.clear(); state.feed = []; state.unread = 0;
+    state.groups = groups; selectGroup(0);
+    state.tab = 'wallet'; state.sub = null;
+    toast('Đã khôi phục ví nóng.');
+    refresh();
+  });
 }
 
 // ---------------------------------------------------------------------------
 // Tab Ví
 // ---------------------------------------------------------------------------
+function updateProjectId(id, remember = false) {
+  try {
+    localStorage.removeItem(LEGACY_KEY_STORE);
+    if (remember) localStorage.setItem(KEY_STORE, id);
+    else localStorage.removeItem(KEY_STORE);
+  } catch {
+    if (remember) toast('Không lưu được Project ID. Chỉ dùng trong phiên này.', true);
+    else toast('Không thể xóa Project ID khỏi bộ nhớ trình duyệt.', true);
+  }
+  state.key = id;
+  setProjectId(id);
+}
+
 function viewKeySetup() {
-  const f = field('Project ID (bắt đầu bằng "mainnet")', { type: 'text', placeholder: 'mainnet…', value: '' });
+  const f = field('Project ID (bắt đầu bằng "mainnet")', { type: 'password', placeholder: 'mainnet…', value: '', autocomplete: 'off' });
+  const remember = h('input', { type: 'checkbox' });
   return [
     h('section.card', h('h2', 'Kết nối mạng Cardano'),
       h('p', 'Ví nóng đọc số dư và gửi giao dịch qua dịch vụ Blockfrost. Bạn cần một mã "Project ID" miễn phí của riêng mình:'),
@@ -3317,11 +3377,13 @@ function viewKeySetup() {
         h('li', 'Bấm "Add project", mục Network chọn "Cardano mainnet"'),
         h('li', 'Sao chép "Project ID" và dán vào ô dưới đây')),
       f.el,
-      h('p.hint', 'Mã này chỉ dùng để đọc dữ liệu công khai và gửi giao dịch đã ký; nó không tiêu được tiền. Mã được lưu trên máy này.')),
+      h('p.hint', 'Mã này chỉ dùng để đọc dữ liệu công khai và gửi giao dịch đã ký; nó không tiêu được tiền. Mặc định mã chỉ dùng trong phiên này.')),
+    h('label.check', remember, 'Lưu Project ID trên thiết bị này'),
     busyButton('Lưu và kết nối', async () => {
       const id = f.input.value.trim();
       if (!isValidProjectId(id)) throw new Error('Project ID phải bắt đầu bằng "mainnet" và theo sau là 32 ký tự. Hãy kiểm tra dự án có đúng mạng Cardano mainnet không.');
-      localStorage.setItem(KEY_STORE, id); state.key = id; setProjectId(id);
+      updateProjectId(id, remember.checked);
+      f.input.value = '';
       state.sub = null; state.tab = 'wallet'; state.data = null;
       await refresh();
     }),
@@ -3373,7 +3435,7 @@ function viewWallet() {
     h('label.check', h('input', { type: 'checkbox', checked: mon.on || null, onchange: e => setMonitor(e.target.checked) }), 'Theo dõi số dư trực tuyến (tự kiểm tra khi đang mở ví)'),
     h('div.mon', { id: 'mon-status' }, h('i'), h('span', '')),
     state.data ? h('p.hint', `Cập nhật lúc ${new Date(state.data.at).toLocaleTimeString('vi-VN')}`) : null,
-    h('p.hint', 'Phiên bản 2.4 · 2026-11-16 06:39 UTC')
+    h('p.hint', 'Phiên bản 2.4 · 2026-11-23 04:07 UTC')
   ];
 }
 
@@ -3612,12 +3674,11 @@ function viewFlow() {
     return [flowSteps(2), h('section.card.center', h('span.caps', 'CHỮ KÝ HỢP LỆ'), h('p', 'Giao dịch đã được ví lạnh ký. Bấm gửi để phát lên mạng Cardano.')),
       summaryCard(f.analysis),
       busyButton('Gửi giao dịch lên mạng', async () => {
-        const id = await submitTx(f.signed);
-        f.txId = id && id.length === 64 ? id : bytesToHex(f.hash);
+        f.txId = await submitTx(f.signed, bytesToHex(f.hash));
         f.step = 'done'; state.data = null; state.all.delete(activeGroup().xpub); render();
       }), cancel];
   }
-  return [h('section.card.center', h('span.caps', 'ĐÃ GỬI'), h('p', 'Giao dịch đã được mạng tiếp nhận. Số dư sẽ cập nhật sau khoảng 1 phút.'),
+  return [h('section.card.center', h('span.caps', 'ĐÃ GỬI'), h('p', 'Blockfrost đã nhận giao dịch. Chờ blockchain xác nhận để cập nhật số dư.'),
     h('p.mono', f.txId),
     h('a', { href: `https://cardanoscan.io/transaction/${f.txId}`, target: '_blank', rel: 'noopener noreferrer' }, 'Xem trên Cardanoscan')), cancel];
 }
@@ -3793,15 +3854,20 @@ function viewBackup() {
         state.all.delete(state.groups[state.activeGroup].xpub);
         state.groups.splice(state.activeGroup, 1);
         if (state.groups.length) { selectGroup(0); state.tab = 'wallet'; refresh(); }
-        else { persistGroups(); state.wallet = null; state.data = null; state.history = null; state.sub = null; render(); }
+        else { persistGroups(); updateProjectId(''); state.wallet = null; state.data = null; state.history = null; state.sub = null; render(); }
       }) }, `Gỡ nhóm «${groupName()}»`)),
     h('section.card', h('h2', 'Kết nối mạng'), h('p', state.key ? `Đang dùng Blockfrost, Project ID …${state.key.slice(-4)}` : 'Chưa nhập Project ID của Blockfrost.'),
-      h('button.secondary', { type: 'button', onclick: () => { state.tab = 'wallet'; state.sub = 'key'; render(); } }, 'Đổi Project ID Blockfrost'))
+      h('button.secondary', { type: 'button', onclick: () => { state.tab = 'wallet'; state.sub = 'key'; render(); } }, 'Đổi Project ID Blockfrost'),
+      state.key ? h('button.ghost', { type: 'button', onclick: () => {
+        updateProjectId('');
+        render();
+      } }, 'Xóa Project ID') : null)
   ];
 }
 
 // ---------------------------------------------------------------------------
 async function boot() {
+  if (window.self !== window.top) return;
   if (!globalThis.crypto || !globalThis.crypto.subtle) {
     root.append(h('div.gate', h('h1', 'Cần mở bằng HTTPS'), h('p', 'Ví nóng phải được mở qua địa chỉ https:// (hoặc đã thêm vào Màn hình chính từ địa chỉ https).')));
     return;
@@ -3812,6 +3878,7 @@ async function boot() {
     return;
   }
   loadGroups();
+  try { localStorage.removeItem(LEGACY_KEY_STORE); } catch { /* storage unavailable */ }
   try { const k = localStorage.getItem(KEY_STORE); if (isValidProjectId(k)) { state.key = k; setProjectId(k); } } catch { /* chưa có */ }
   try { mon.on = localStorage.getItem(MON_KEY) !== '0'; } catch { /* mặc định bật */ }
   render();
